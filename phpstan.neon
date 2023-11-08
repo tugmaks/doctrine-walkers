@@ -1,0 +1,9 @@
+includes:
+    - vendor/phpstan/phpstan-doctrine/extension.neon
+    - vendor/phpstan/phpstan/conf/bleedingEdge.neon
+parameters:
+    tmpDir: var/phpstan
+    level: 9
+    paths:
+        - src
+        - tests
