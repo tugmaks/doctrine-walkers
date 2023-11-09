@@ -29,4 +29,9 @@ jobs:
         uses: "ramsey/composer-install@v1"
 
       - name: "Phpunit"
-        run: "vendor/bin/phpunit"
+        run: "vendor/bin/phpunit --coverage-clover coverage.xml ."
+
+      - name: "Upload coverage to Codecov"
+        uses: "codecov/codecov-action@v3"
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
