@@ -30,7 +30,7 @@ use Tugmaks\DoctrineWalkers\Locking\LockStrength;
 use Tugmaks\DoctrineWalkers\Locking\Option;
 
 /**
- * @coversDefaultClass \LockingWalker
+ * @coversDefaultClass \Tugmaks\DoctrineWalkers\Locking\LockingWalker
  */
 final class LockingWalkerWalkerTest extends TestCase
 {
