@@ -20,7 +20,6 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Query;
-use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -59,7 +58,12 @@ final class LockingWalkerWalkerTest extends TestCase
         $this->entityManager = new EntityManager($connectionMock, $config);
     }
 
-    #[DataProvider('lockingClauseAndSql')]
+    /**
+     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingClause
+     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::walkSelectStatement
+     *
+     * @dataProvider lockingClauseAndSql
+     */
     public function testHints(LockingClause $lockingClause, string $producedSql): void
     {
         $dql = \sprintf('SELECT d FROM %s d WHERE d.id = 1', DummyEntity::class);
@@ -72,7 +76,10 @@ final class LockingWalkerWalkerTest extends TestCase
         self::assertSame($producedSql, $query->getSQL());
     }
 
-    public static function lockingClauseAndSql(): Generator
+    /**
+     * @return iterable<array{0:LockingClause,1:string}>
+     */
+    public static function lockingClauseAndSql(): iterable
     {
         yield [
             new LockingClause(LockStrength::UPDATE),
@@ -85,6 +92,9 @@ final class LockingWalkerWalkerTest extends TestCase
         ];
     }
 
+    /**
+     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::walkSelectStatement
+     */
     public function testItThrowsExceptionIfLockingClauseNotProvided(): void
     {
         self::expectException(LockingWalkerException::class);
@@ -99,6 +109,10 @@ final class LockingWalkerWalkerTest extends TestCase
         $query->getSQL();
     }
 
+    /**
+     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingClause
+     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::walkSelectStatement
+     */
     public function testItThrowsExceptionIfAnotherLockSet(): void
     {
         self::expectException(LockingWalkerException::class);
