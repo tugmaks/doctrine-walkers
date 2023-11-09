@@ -20,7 +20,6 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Query;
-use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -31,7 +30,7 @@ use Tugmaks\DoctrineWalkers\Locking\LockStrength;
 use Tugmaks\DoctrineWalkers\Locking\Option;
 
 /**
- * @coversDefaultClass LockingWalker
+ * @coversDefaultClass \LockingWalker
  */
 final class LockingWalkerWalkerTest extends TestCase
 {
@@ -62,11 +61,10 @@ final class LockingWalkerWalkerTest extends TestCase
         $this->entityManager = new EntityManager($connectionMock, $config);
     }
 
-
     /**
+     * @covers ::walkSelectStatement
      *
      * @dataProvider lockingClauseAndSql
-     * @covers ::walkSelectStatement
      */
     public function testHints(LockingClause $lockingClause, string $producedSql): void
     {
@@ -80,7 +78,7 @@ final class LockingWalkerWalkerTest extends TestCase
         self::assertSame($producedSql, $query->getSQL());
     }
 
-    public static function lockingClauseAndSql(): Generator
+    public static function lockingClauseAndSql(): iterable
     {
         yield [
             new LockingClause(LockStrength::UPDATE),
