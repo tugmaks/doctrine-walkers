@@ -110,7 +110,7 @@ final class LockingWalkerWalkerTest extends TestCase
     }
 
     /**
-     * @covers ::walkSelectStatement
+     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::walkSelectStatement
      * @covers \Tugmaks\DoctrineWalkers\Locking\LockingClause
      */
     public function testItThrowsExceptionIfAnotherLockSet(): void
