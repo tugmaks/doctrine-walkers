@@ -29,9 +29,6 @@ use Tugmaks\DoctrineWalkers\Locking\LockingWalkerException;
 use Tugmaks\DoctrineWalkers\Locking\LockStrength;
 use Tugmaks\DoctrineWalkers\Locking\Option;
 
-/**
- * @coversDefaultClass \Tugmaks\DoctrineWalkers\Locking\LockingWalker
- */
 final class LockingWalkerWalkerTest extends TestCase
 {
     private EntityManager $entityManager;
@@ -62,7 +59,8 @@ final class LockingWalkerWalkerTest extends TestCase
     }
 
     /**
-     * @covers ::walkSelectStatement
+     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::walkSelectStatement
+     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingClause
      *
      * @dataProvider lockingClauseAndSql
      */
@@ -95,7 +93,7 @@ final class LockingWalkerWalkerTest extends TestCase
     }
 
     /**
-     * @covers ::walkSelectStatement
+     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::walkSelectStatement
      */
     public function testItThrowsExceptionIfLockingClauseNotProvided(): void
     {
@@ -113,6 +111,7 @@ final class LockingWalkerWalkerTest extends TestCase
 
     /**
      * @covers ::walkSelectStatement
+     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingClause
      */
     public function testItThrowsExceptionIfAnotherLockSet(): void
     {
