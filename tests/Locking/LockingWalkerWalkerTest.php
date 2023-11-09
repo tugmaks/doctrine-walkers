@@ -30,6 +30,9 @@ use Tugmaks\DoctrineWalkers\Locking\LockingWalkerException;
 use Tugmaks\DoctrineWalkers\Locking\LockStrength;
 use Tugmaks\DoctrineWalkers\Locking\Option;
 
+/**
+ * @coversDefaultClass LockingWalker
+ */
 final class LockingWalkerWalkerTest extends TestCase
 {
     private EntityManager $entityManager;
@@ -59,7 +62,12 @@ final class LockingWalkerWalkerTest extends TestCase
         $this->entityManager = new EntityManager($connectionMock, $config);
     }
 
-    #[DataProvider('lockingClauseAndSql')]
+
+    /**
+     *
+     * @dataProvider lockingClauseAndSql
+     * @covers ::walkSelectStatement
+     */
     public function testHints(LockingClause $lockingClause, string $producedSql): void
     {
         $dql = \sprintf('SELECT d FROM %s d WHERE d.id = 1', DummyEntity::class);
@@ -85,6 +93,9 @@ final class LockingWalkerWalkerTest extends TestCase
         ];
     }
 
+    /**
+     * @covers ::walkSelectStatement
+     */
     public function testItThrowsExceptionIfLockingClauseNotProvided(): void
     {
         self::expectException(LockingWalkerException::class);
@@ -99,6 +110,9 @@ final class LockingWalkerWalkerTest extends TestCase
         $query->getSQL();
     }
 
+    /**
+     * @covers ::walkSelectStatement
+     */
     public function testItThrowsExceptionIfAnotherLockSet(): void
     {
         self::expectException(LockingWalkerException::class);
