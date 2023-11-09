@@ -1,0 +1,29 @@
+name: "Testing"
+env:
+  APP_ENV: test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: "Test"
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version:
+          - "8.2"
+          - "8.1"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "${{ matrix.php-version }}"
+
+      - name: "Phpunit"
+        run: "vendor/bin/phpunit"
