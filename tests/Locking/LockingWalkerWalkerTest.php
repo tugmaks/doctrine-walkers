@@ -78,6 +78,9 @@ final class LockingWalkerWalkerTest extends TestCase
         self::assertSame($producedSql, $query->getSQL());
     }
 
+    /**
+     * @return iterable<array{0:LockingClause,1:string}>
+     */
     public static function lockingClauseAndSql(): iterable
     {
         yield [
