@@ -5,11 +5,9 @@
     ],
     "type": "library",
     "keywords": [
-        "doctrine walker",
-        "output walker",
-        "walker",
-        "doctrinecomposer require --dev ergebnis/composer-normalize",
-        "lock"
+        "doctrine-walker",
+        "output-walker",
+        "doctrine"
     ],
     "authors": [
         {
