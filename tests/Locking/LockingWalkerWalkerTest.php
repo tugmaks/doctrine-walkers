@@ -59,8 +59,8 @@ final class LockingWalkerWalkerTest extends TestCase
     }
 
     /**
-     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::walkSelectStatement
      * @covers \Tugmaks\DoctrineWalkers\Locking\LockingClause
+     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::walkSelectStatement
      *
      * @dataProvider lockingClauseAndSql
      */
@@ -110,8 +110,8 @@ final class LockingWalkerWalkerTest extends TestCase
     }
 
     /**
-     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::walkSelectStatement
      * @covers \Tugmaks\DoctrineWalkers\Locking\LockingClause
+     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::walkSelectStatement
      */
     public function testItThrowsExceptionIfAnotherLockSet(): void
     {
