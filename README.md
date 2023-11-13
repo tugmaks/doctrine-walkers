@@ -1,3 +1,4 @@
+[![codecov](https://codecov.io/gh/tugmaks/doctrine-walkers/graph/badge.svg?token=4YXA0059QT)](https://codecov.io/gh/tugmaks/doctrine-walkers)
 # Doctrine walkers
 
 ## Installation
