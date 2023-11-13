@@ -64,7 +64,7 @@ final class NullsWalkerTest extends AbstractWalkerTestCase
     }
 
     /**
-     * @covers \Tugmaks\DoctrineWalkers\Ordering\NullsWalkers::walkOrderByItem
+     * @covers \Tugmaks\DoctrineWalkers\Ordering\NullsWalkers
      */
     public function testItThrowExceptionIfHintIsInvalid(): void
     {
