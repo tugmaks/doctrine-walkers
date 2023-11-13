@@ -13,51 +13,20 @@ declare(strict_types=1);
 
 namespace Tugmaks\DoctrineWalkersTest\Locking;
 
-use Doctrine\Common\EventManager;
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
-use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Query;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Tugmaks\DoctrineWalkers\Locking\LockingClause;
 use Tugmaks\DoctrineWalkers\Locking\LockingWalker;
 use Tugmaks\DoctrineWalkers\Locking\LockingWalkerException;
 use Tugmaks\DoctrineWalkers\Locking\LockStrength;
 use Tugmaks\DoctrineWalkers\Locking\Option;
+use Tugmaks\DoctrineWalkersTest\AbstractWalkerTestCase;
+use Tugmaks\DoctrineWalkersTest\DummyEntity;
 
-final class LockingWalkerWalkerTest extends TestCase
+final class LockingWalkerTest extends AbstractWalkerTestCase
 {
-    private EntityManager $entityManager;
-    private Connection&MockObject $connectionMock;
-    private Configuration $configuration;
-
-    protected function setUp(): void
-    {
-        $config = new Configuration();
-        $config->setProxyNamespace('Tmp\Doctrine\Tests\Proxies');
-        $config->setProxyDir('/tmp/doctrine');
-        $config->setAutoGenerateProxyClasses(false);
-        $config->setSecondLevelCacheEnabled(false);
-        $config->setMetadataDriverImpl(new AttributeDriver([]));
-
-        $eventManager = $this->createMock(EventManager::class);
-        $connectionMock = $this->createMock(Connection::class);
-        $connectionMock->method('getEventManager')
-            ->willReturn($eventManager);
-
-        $connectionMock->method('getDatabasePlatform')
-            ->willReturn(new PlatformMock());
-
-        $this->connectionMock = $connectionMock;
-        $this->configuration = $config;
-
-        $this->entityManager = new EntityManager($connectionMock, $config);
-    }
-
     /**
      * @covers \Tugmaks\DoctrineWalkers\Locking\LockingClause
      * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::walkSelectStatement

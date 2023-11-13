@@ -11,16 +11,10 @@ declare(strict_types=1);
  * @see https://github.com/tugmaks/doctrine-walkers
  */
 
-namespace Tugmaks\DoctrineWalkersTest\Locking;
+namespace Tugmaks\DoctrineWalkers\Ordering;
 
-use Doctrine\ORM\Mapping as ORM;
+use LogicException;
 
-#[ORM\Entity()] #[ORM\Table(name: 'de_tbl')]
-class DummyEntity
+final class NullsWalkerException extends LogicException
 {
-    #[ORM\Id()] #[ORM\Column()]
-    public string $id;
-
-    #[ORM\Column()]
-    public string $name;
 }

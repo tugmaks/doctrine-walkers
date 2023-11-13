@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @see https://github.com/tugmaks/doctrine-walkers
  */
 
-namespace Tugmaks\DoctrineWalkersTest\Locking;
+namespace Tugmaks\DoctrineWalkersTest;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
