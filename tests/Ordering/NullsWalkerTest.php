@@ -26,6 +26,8 @@ final class NullsWalkerTest extends AbstractWalkerTestCase
      * @covers \Tugmaks\DoctrineWalkers\Ordering\NullsWalkers
      *
      * @dataProvider orderings
+     *
+     * @param array<string, NULLS> $hint
      */
     public function testNullWalker(string $dql, array $hint, string $sql): void
     {
@@ -37,6 +39,9 @@ final class NullsWalkerTest extends AbstractWalkerTestCase
         self::assertSame($sql, $query->getSQL());
     }
 
+    /**
+     * @return iterable<string, array{0:string, 1: array<string, NULLS>, 2:string}>
+     */
     public static function orderings(): iterable
     {
         yield 'Single field' => [
