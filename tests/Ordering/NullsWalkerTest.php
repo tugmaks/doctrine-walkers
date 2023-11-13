@@ -80,4 +80,22 @@ final class NullsWalkerTest extends AbstractWalkerTestCase
 
         $query->getSQL();
     }
+
+    /**
+     * @covers \Tugmaks\DoctrineWalkers\Ordering\NullsWalkers
+     */
+    public function testItThrowsAnErrorIfHintIsNotArray(): void
+    {
+        self::expectException(NullsWalkerException::class);
+        self::expectExceptionMessage('Hint for NullsWalker should be an array...');
+
+        $dql = \sprintf('SELECT d FROM %s d ORDER BY d.name DESC', DummyEntity::class);
+
+        $query = $this->entityManager->createQuery($dql);
+
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullsWalkers::class);
+        $query->setHint(NullsWalkers::NULLS_RULE, 'foo');
+
+        $query->getSQL();
+    }
 }

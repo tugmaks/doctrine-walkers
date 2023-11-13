@@ -1,5 +1,6 @@
 {
     "name": "tugmaks/doctrine-walkers",
+    "description": "Set of doctrine walkers",
     "license": [
         "MIT"
     ],
@@ -7,7 +8,10 @@
     "keywords": [
         "doctrine-walker",
         "output-walker",
-        "doctrine"
+        "doctrine",
+        "skip-locked",
+        "nulls-last",
+        "nulls-first"
     ],
     "authors": [
         {

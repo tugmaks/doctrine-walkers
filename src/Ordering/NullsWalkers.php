@@ -45,7 +45,7 @@ final class NullsWalkers extends SqlWalker
         $hint = $this->getQuery()->getHint(self::NULLS_RULE);
 
         if (!\is_array($hint)) {
-            throw new NullsWalkerException('Hint for NullsWalker should be an array');
+            throw new NullsWalkerException('Hint for NullsWalker should be an array...');
         }
 
         $nulls = $hint[$name] ?? null;
