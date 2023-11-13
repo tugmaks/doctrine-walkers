@@ -24,6 +24,7 @@ final class NullsWalkerTest extends AbstractWalkerTestCase
 {
     /**
      * @covers \Tugmaks\DoctrineWalkers\Ordering\NullsWalkers
+     *
      * @dataProvider orderings
      */
     public function testNullWalker(string $dql, array $hint, string $sql): void
@@ -40,20 +41,20 @@ final class NullsWalkerTest extends AbstractWalkerTestCase
     {
         yield 'Single field' => [
             \sprintf('SELECT d FROM %s d ORDER BY d.name DESC', DummyEntity::class),
-            ['d.name'=>NULLS::LAST],
-            'SELECT d0_.id AS id_0, d0_.name AS name_1 FROM de_tbl d0_ ORDER BY d0_.name DESC NULLS LAST'
+            ['d.name' => NULLS::LAST],
+            'SELECT d0_.id AS id_0, d0_.name AS name_1 FROM de_tbl d0_ ORDER BY d0_.name DESC NULLS LAST',
         ];
 
         yield 'Multiple fields' => [
             \sprintf('SELECT d FROM %s d ORDER BY d.name DESC, d.id DESC', DummyEntity::class),
-            ['d.name'=>NULLS::LAST, 'd.id'=>NULLS::LAST],
-            'SELECT d0_.id AS id_0, d0_.name AS name_1 FROM de_tbl d0_ ORDER BY d0_.name DESC NULLS LAST, d0_.id DESC NULLS LAST'
+            ['d.name' => NULLS::LAST, 'd.id' => NULLS::LAST],
+            'SELECT d0_.id AS id_0, d0_.name AS name_1 FROM de_tbl d0_ ORDER BY d0_.name DESC NULLS LAST, d0_.id DESC NULLS LAST',
         ];
 
         yield 'Multiple fields but not all fields use LAST/FIRST' => [
             \sprintf('SELECT d FROM %s d ORDER BY d.name DESC, d.id DESC', DummyEntity::class),
-            ['d.name'=>NULLS::LAST],
-            'SELECT d0_.id AS id_0, d0_.name AS name_1 FROM de_tbl d0_ ORDER BY d0_.name DESC NULLS LAST, d0_.id DESC'
+            ['d.name' => NULLS::LAST],
+            'SELECT d0_.id AS id_0, d0_.name AS name_1 FROM de_tbl d0_ ORDER BY d0_.name DESC NULLS LAST, d0_.id DESC',
         ];
     }
 
