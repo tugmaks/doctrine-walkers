@@ -26,6 +26,7 @@ use Tugmaks\DoctrineWalkersTest\DummyEntity;
 final class TablesampleWalkerTest extends AbstractWalkerTestCase
 {
     /**
+     * @covers \Tugmaks\DoctrineWalkers\Tablesample\Tablesample
      * @covers \Tugmaks\DoctrineWalkers\Tablesample\TablesampleWalker
      *
      * @dataProvider tablesamples
@@ -61,6 +62,7 @@ final class TablesampleWalkerTest extends AbstractWalkerTestCase
     }
 
     /**
+     * @covers \Tugmaks\DoctrineWalkers\Tablesample\Tablesample
      * @covers \Tugmaks\DoctrineWalkers\Tablesample\TablesampleWalker
      *
      * @dataProvider invalidPercentage
