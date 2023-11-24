@@ -16,9 +16,9 @@ namespace Tugmaks\DoctrineWalkers\Ordering;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\SqlWalker;
 
-final class NullsWalkers extends SqlWalker
+final class NullsWalker extends SqlWalker
 {
-    public const NULLS_RULE = 'NullsWalkers.Rule';
+    public const NULLS_RULE = 'NullsWalker.Rule';
 
     /**
      * {@inheritDoc}

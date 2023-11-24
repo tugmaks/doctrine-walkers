@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+1.2
+---
+
+* TABLESAMPLE walker (SYSTEM/BERNOULLI)
+
 1.1
 ---
 

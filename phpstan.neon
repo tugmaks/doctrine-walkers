@@ -1,6 +1,7 @@
 includes:
     - vendor/phpstan/phpstan-doctrine/extension.neon
     - vendor/phpstan/phpstan/conf/bleedingEdge.neon
+    - vendor/phpstan/phpstan-phpunit/extension.neon
 parameters:
     tmpDir: var/phpstan
     level: 9
