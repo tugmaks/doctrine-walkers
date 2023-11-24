@@ -15,15 +15,15 @@ namespace Tugmaks\DoctrineWalkersTest\Ordering;
 
 use Doctrine\ORM\Query;
 use Tugmaks\DoctrineWalkers\Ordering\NULLS;
+use Tugmaks\DoctrineWalkers\Ordering\NullsWalker;
 use Tugmaks\DoctrineWalkers\Ordering\NullsWalkerException;
-use Tugmaks\DoctrineWalkers\Ordering\NullsWalkers;
 use Tugmaks\DoctrineWalkersTest\AbstractWalkerTestCase;
 use Tugmaks\DoctrineWalkersTest\DummyEntity;
 
 final class NullsWalkerTest extends AbstractWalkerTestCase
 {
     /**
-     * @covers \Tugmaks\DoctrineWalkers\Ordering\NullsWalkers
+     * @covers \Tugmaks\DoctrineWalkers\Ordering\NullsWalker
      *
      * @dataProvider orderings
      *
@@ -33,8 +33,8 @@ final class NullsWalkerTest extends AbstractWalkerTestCase
     {
         $query = $this->entityManager->createQuery($dql);
 
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullsWalkers::class);
-        $query->setHint(NullsWalkers::NULLS_RULE, $hint);
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullsWalker::class);
+        $query->setHint(NullsWalker::NULLS_RULE, $hint);
 
         self::assertSame($sql, $query->getSQL());
     }
@@ -64,7 +64,7 @@ final class NullsWalkerTest extends AbstractWalkerTestCase
     }
 
     /**
-     * @covers \Tugmaks\DoctrineWalkers\Ordering\NullsWalkers
+     * @covers \Tugmaks\DoctrineWalkers\Ordering\NullsWalker
      */
     public function testItThrowExceptionIfHintIsInvalid(): void
     {
@@ -75,14 +75,14 @@ final class NullsWalkerTest extends AbstractWalkerTestCase
 
         $query = $this->entityManager->createQuery($dql);
 
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullsWalkers::class);
-        $query->setHint(NullsWalkers::NULLS_RULE, ['d.name' => 'NULLS enum case expected here, but string provided']);
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullsWalker::class);
+        $query->setHint(NullsWalker::NULLS_RULE, ['d.name' => 'NULLS enum case expected here, but string provided']);
 
         $query->getSQL();
     }
 
     /**
-     * @covers \Tugmaks\DoctrineWalkers\Ordering\NullsWalkers
+     * @covers \Tugmaks\DoctrineWalkers\Ordering\NullsWalker
      */
     public function testItThrowsAnErrorIfHintIsNotArray(): void
     {
@@ -93,8 +93,8 @@ final class NullsWalkerTest extends AbstractWalkerTestCase
 
         $query = $this->entityManager->createQuery($dql);
 
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullsWalkers::class);
-        $query->setHint(NullsWalkers::NULLS_RULE, 'foo');
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullsWalker::class);
+        $query->setHint(NullsWalker::NULLS_RULE, 'foo');
 
         $query->getSQL();
     }
