@@ -11,7 +11,8 @@
         "doctrine",
         "skip-locked",
         "nulls-last",
-        "nulls-first"
+        "nulls-first",
+        "tablesample"
     ],
     "authors": [
         {
@@ -25,8 +26,8 @@
     },
     "require-dev": {
         "ergebnis/composer-normalize": "^2.39",
-        "ergebnis/php-cs-fixer-config": "^6.10",
-        "friendsofphp/php-cs-fixer": "^3.37",
+        "ergebnis/php-cs-fixer-config": "^6.12",
+        "friendsofphp/php-cs-fixer": "^3.40",
         "icanhazstring/composer-unused": "^0.8.10",
         "phpstan/phpstan": "^1.10",
         "phpstan/phpstan-doctrine": "^1.3",
