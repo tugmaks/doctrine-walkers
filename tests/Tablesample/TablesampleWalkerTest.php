@@ -83,7 +83,7 @@ final class TablesampleWalkerTest extends AbstractWalkerTestCase
     }
 
     /**
-     * @return iterable<int, array<float>>
+     * @return iterable<int, list<float>>
      */
     public static function invalidPercentage(): iterable
     {

@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Tugmaks\DoctrineWalkers\Locking;
 
-use LogicException;
-
-final class LockingWalkerException extends LogicException
+final class LockingWalkerException extends \LogicException
 {
 }

@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Tugmaks\DoctrineWalkers\Tablesample;
 
-use LogicException;
-
-final class TablesampleWalkerException extends LogicException
+final class TablesampleWalkerException extends \LogicException
 {
 }

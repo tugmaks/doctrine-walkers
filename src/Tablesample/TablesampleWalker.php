@@ -27,7 +27,7 @@ final class TablesampleWalker extends SqlWalker
      */
     public function walkFromClause($fromClause): string
     {
-        /** @var array<\Doctrine\ORM\Query\AST\IdentificationVariableDeclaration> $identificationVarDecls */
+        /** @var list<\Doctrine\ORM\Query\AST\IdentificationVariableDeclaration> $identificationVarDecls */
         $identificationVarDecls = $fromClause->identificationVariableDeclarations;
         $sqlParts = [];
 

@@ -15,8 +15,10 @@ namespace Tugmaks\DoctrineWalkers\Locking;
 
 final class LockingClause
 {
-    public function __construct(private readonly LockStrength $lockStrength, private readonly ?Option $option = null)
-    {
+    public function __construct(
+        private readonly LockStrength $lockStrength,
+        private readonly ?Option $option = null,
+    ) {
     }
 
     public function toSQL(): string

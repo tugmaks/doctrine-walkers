@@ -46,7 +46,7 @@ final class LockingWalkerTest extends AbstractWalkerTestCase
     }
 
     /**
-     * @return iterable<array{0:LockingClause,1:string}>
+     * @return iterable<array{0:LockingClause, 1:string}>
      */
     public static function lockingClauseAndSql(): iterable
     {

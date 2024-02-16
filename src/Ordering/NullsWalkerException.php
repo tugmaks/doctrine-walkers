@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Tugmaks\DoctrineWalkers\Ordering;
 
-use LogicException;
-
-final class NullsWalkerException extends LogicException
+final class NullsWalkerException extends \LogicException
 {
 }

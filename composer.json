@@ -26,8 +26,8 @@
     },
     "require-dev": {
         "ergebnis/composer-normalize": "^2.39",
-        "ergebnis/php-cs-fixer-config": "^6.12",
-        "friendsofphp/php-cs-fixer": "^3.40",
+        "ergebnis/php-cs-fixer-config": "^6.22",
+        "friendsofphp/php-cs-fixer": "^3.49",
         "icanhazstring/composer-unused": "^0.8.10",
         "phpstan/phpstan": "^1.10",
         "phpstan/phpstan-doctrine": "^1.3",
