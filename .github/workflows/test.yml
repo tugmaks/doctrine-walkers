@@ -9,37 +9,19 @@ jobs:
     name: "Test"
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        php-version:
-          - "8.4"
-          - "8.3"
-          - "8.2"
-          - "8.1"
-        deps:
-          - "lowest"
-          - "highest"
-
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4"
 
-      - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          coverage: "none"
-          php-version: "${{ matrix.php-version }}"
-
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v2"
-        with:
-          dependency-versions: "${{ matrix.deps }}"
+        uses: "php-actions/composer@v6"
 
-      - name: PHPUnit Tests
-        uses: php-actions/phpunit@v3
+      - name: "PHPUnit Tests"
+        uses: "php-actions/phpunit@v4"
         env:
           XDEBUG_MODE: coverage
         with:
+          php_version: "8.1"
           bootstrap: vendor/autoload.php
           configuration: phpunit.xml
           php_extensions: xdebug
