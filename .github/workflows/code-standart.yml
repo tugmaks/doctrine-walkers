@@ -34,4 +34,4 @@ jobs:
         run: "composer normalize --diff --dry-run"
 
       - name: "Run php cs fixer"
-        run: "vendor/bin/php-cs-fixer fix --diff --dry-run --using-cache=no"
+        run: "PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --diff --dry-run --using-cache=no"
