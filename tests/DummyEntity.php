@@ -15,10 +15,12 @@ namespace Tugmaks\DoctrineWalkersTest;
 
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity()] #[ORM\Table(name: 'de_tbl')]
+#[ORM\Entity()]
+#[ORM\Table(name: 'de_tbl')]
 class DummyEntity
 {
-    #[ORM\Id()] #[ORM\Column()]
+    #[ORM\Column()]
+    #[ORM\Id()]
     public string $id;
 
     #[ORM\Column()]
