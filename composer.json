@@ -22,7 +22,7 @@
     ],
     "require": {
         "php": "^8.1",
-        "doctrine/orm": "^2.15"
+        "doctrine/orm": "^2.20"
     },
     "require-dev": {
         "ergebnis/composer-normalize": "^2.39",

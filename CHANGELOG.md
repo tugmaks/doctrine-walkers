@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+1.3
+---
+
+* Walkers now implement Doctrine\ORM\Query\OutputWalker interface. See https://github.com/doctrine/orm/pull/11188/
+
 1.2
 ---
 

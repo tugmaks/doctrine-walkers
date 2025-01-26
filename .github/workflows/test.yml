@@ -9,6 +9,14 @@ jobs:
     name: "Test"
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        php-version:
+          - "8.4"
+          - "8.3"
+          - "8.2"
+          - "8.1"
+
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4"
@@ -16,20 +24,21 @@ jobs:
       - name: "Install dependencies with Composer"
         uses: "php-actions/composer@v6"
         with:
-          php_version: "8.1"
+          php_version: "${{ matrix.php-version }}"
 
       - name: "PHPUnit Tests"
         uses: "php-actions/phpunit@v4"
         env:
           XDEBUG_MODE: coverage
         with:
-          php_version: "8.1"
+          php_version: "${{ matrix.php-version }}"
           bootstrap: vendor/autoload.php
           configuration: phpunit.xml
           php_extensions: xdebug
           args: tests --coverage-clover ./coverage.xml
 
       - name: Upload to Codecov
+        if: ${{ matrix.php-version == '8.1' }}
         uses: "codecov/codecov-action@v5"
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
