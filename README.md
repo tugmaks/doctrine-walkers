@@ -27,7 +27,7 @@ SELECT u0_.id AS id_0, u0_.name AS name_1 FROM users u0_ WHERE u0_.id = 1 FOR UP
 ```php
 $query = $this->entityManager->createQuery('SELECT u FROM App\Entity\User u ORDER BY u.name DESC');
 
-$query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullsWalkers::class);
+$query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullsWalker::class);
 $query->setHint(NullsWalkers::NULLS_RULE, ['u.name' => NULLS::LAST]);
 
 $query->getSQL();
