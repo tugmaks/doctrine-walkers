@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Copyright (c) 2023 Maksim Tugaev
+ * Copyright (c) 2025 Maksim Tugaev
  *
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
@@ -14,9 +14,9 @@ declare(strict_types=1);
 namespace Tugmaks\DoctrineWalkers\Ordering;
 
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\SqlOutputWalker;
 
-final class NullsWalker extends SqlWalker
+final class NullsWalker extends SqlOutputWalker
 {
     public const NULLS_RULE = 'NullsWalker.Rule';
 

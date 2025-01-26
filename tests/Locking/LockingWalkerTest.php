@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Copyright (c) 2023 Maksim Tugaev
+ * Copyright (c) 2025 Maksim Tugaev
  *
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
@@ -29,6 +29,7 @@ final class LockingWalkerTest extends AbstractWalkerTestCase
 {
     /**
      * @covers \Tugmaks\DoctrineWalkers\Locking\LockingClause
+     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::getFinalizer
      * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::walkSelectStatement
      *
      * @dataProvider lockingClauseAndSql
@@ -62,6 +63,7 @@ final class LockingWalkerTest extends AbstractWalkerTestCase
     }
 
     /**
+     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::getFinalizer
      * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::walkSelectStatement
      */
     public function testItThrowsExceptionIfLockingClauseNotProvided(): void
@@ -80,6 +82,7 @@ final class LockingWalkerTest extends AbstractWalkerTestCase
 
     /**
      * @covers \Tugmaks\DoctrineWalkers\Locking\LockingClause
+     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::getFinalizer
      * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::walkSelectStatement
      */
     public function testItThrowsExceptionIfAnotherLockSet(): void

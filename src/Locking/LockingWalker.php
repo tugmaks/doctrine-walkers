@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Copyright (c) 2023 Maksim Tugaev
+ * Copyright (c) 2025 Maksim Tugaev
  *
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
@@ -16,9 +16,13 @@ namespace Tugmaks\DoctrineWalkers\Locking;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST;
+use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\Exec\SingleSelectSqlFinalizer;
+use Doctrine\ORM\Query\Exec\SqlFinalizer;
+use Doctrine\ORM\Query\OutputWalker;
 use Doctrine\ORM\Query\SqlWalker;
 
-final class LockingWalker extends SqlWalker
+final class LockingWalker extends SqlWalker implements OutputWalker
 {
     public const LOCKING_CLAUSE = 'LockingWalker.LockingClause';
 
@@ -38,5 +42,12 @@ final class LockingWalker extends SqlWalker
         }
 
         return \sprintf('%s %s', parent::walkSelectStatement($AST), $lockClause->toSQL());
+    }
+
+    public function getFinalizer($AST): SqlFinalizer
+    {
+        \assert($AST instanceof SelectStatement);
+
+        return new SingleSelectSqlFinalizer($this->walkSelectStatement($AST));
     }
 }
