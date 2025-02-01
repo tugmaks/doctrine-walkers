@@ -1,5 +1,10 @@
 CHANGELOG
 =========
+2.0
+---
+
+* Add support for doctrine/dbal ^4.0 and doctrine/orm ^3.0
+* Drop support for doctrine/orm ^2
 
 1.3
 ---
