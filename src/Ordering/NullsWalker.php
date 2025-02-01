@@ -23,7 +23,7 @@ final class NullsWalker extends SqlOutputWalker
     /**
      * {@inheritDoc}
      */
-    public function walkOrderByItem($orderByItem): string
+    public function walkOrderByItem(Query\AST\OrderByItem $orderByItem): string
     {
         if (
             $orderByItem->expression instanceof Query\AST\PathExpression

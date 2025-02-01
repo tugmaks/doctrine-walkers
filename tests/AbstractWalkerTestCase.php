@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Tugmaks\DoctrineWalkersTest;
 
-use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
@@ -36,13 +36,10 @@ abstract class AbstractWalkerTestCase extends TestCase
         $config->setSecondLevelCacheEnabled(false);
         $config->setMetadataDriverImpl(new AttributeDriver([]));
 
-        $eventManager = $this->createMock(EventManager::class);
         $connectionMock = $this->createMock(Connection::class);
-        $connectionMock->method('getEventManager')
-            ->willReturn($eventManager);
 
         $connectionMock->method('getDatabasePlatform')
-            ->willReturn(new PlatformMock());
+            ->willReturn(new PostgreSQLPlatform());
 
         $this->connectionMock = $connectionMock;
         $this->configuration = $config;

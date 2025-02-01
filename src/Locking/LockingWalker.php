@@ -44,7 +44,7 @@ final class LockingWalker extends SqlWalker implements OutputWalker
         return \sprintf('%s %s', parent::walkSelectStatement($AST), $lockClause->toSQL());
     }
 
-    public function getFinalizer($AST): SqlFinalizer
+    public function getFinalizer(AST\DeleteStatement|AST\SelectStatement|AST\UpdateStatement $AST): SqlFinalizer
     {
         \assert($AST instanceof SelectStatement);
 
