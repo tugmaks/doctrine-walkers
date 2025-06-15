@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tugmaks\DoctrineWalkersTest\Tablesample;
 
 use Doctrine\ORM\Query;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tugmaks\DoctrineWalkers\Ordering\NULLS;
 use Tugmaks\DoctrineWalkers\Tablesample\Tablesample;
@@ -23,16 +24,14 @@ use Tugmaks\DoctrineWalkers\Tablesample\TablesampleWalkerException;
 use Tugmaks\DoctrineWalkersTest\AbstractWalkerTestCase;
 use Tugmaks\DoctrineWalkersTest\DummyEntity;
 
+#[CoversClass(Tablesample::class)]
+#[CoversClass(TablesampleWalker::class)]
 final class TablesampleWalkerTest extends AbstractWalkerTestCase
 {
     /**
-     * @covers \Tugmaks\DoctrineWalkers\Tablesample\Tablesample
-     * @covers \Tugmaks\DoctrineWalkers\Tablesample\TablesampleWalker
-     *
-     * @dataProvider tablesamples
-     *
      * @param array<string, NULLS> $hint
      */
+    #[DataProvider('tablesamples')]
     public function testTablesampleWalker(string $dql, array $hint, string $sql): void
     {
         $query = $this->entityManager->createQuery($dql);
@@ -61,12 +60,7 @@ final class TablesampleWalkerTest extends AbstractWalkerTestCase
         ];
     }
 
-    /**
-     * @covers \Tugmaks\DoctrineWalkers\Tablesample\Tablesample
-     * @covers \Tugmaks\DoctrineWalkers\Tablesample\TablesampleWalker
-     *
-     * @dataProvider invalidPercentage
-     */
+    #[DataProvider('invalidPercentage')]
     public function testItThrowExceptionOnInvalidPercentage(float $percentage): void
     {
         self::expectException(TablesampleWalkerException::class);

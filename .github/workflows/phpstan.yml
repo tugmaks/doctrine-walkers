@@ -1,12 +1,12 @@
-name: "Coding Standards"
+name: "Phpstan"
 env:
   APP_ENV: test
 
 on: [push, pull_request]
 
 jobs:
-  coding-standards:
-    name: "Coding Standards"
+  Phpstan:
+    name: "Phpstan"
     runs-on: ubuntu-latest
 
     strategy:
@@ -29,8 +29,5 @@ jobs:
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
 
-      - name: "Run composer normalize"
-        run: "composer normalize --diff --dry-run"
-
-      - name: "Run php cs fixer"
-        run: "PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --diff --dry-run --using-cache=no"
+      - name: "Run phpstan"
+        run: "vendor/bin/phpstan"

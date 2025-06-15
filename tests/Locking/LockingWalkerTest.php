@@ -16,6 +16,8 @@ namespace Tugmaks\DoctrineWalkersTest\Locking;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tugmaks\DoctrineWalkers\Locking\LockingClause;
 use Tugmaks\DoctrineWalkers\Locking\LockingWalker;
@@ -25,15 +27,12 @@ use Tugmaks\DoctrineWalkers\Locking\Option;
 use Tugmaks\DoctrineWalkersTest\AbstractWalkerTestCase;
 use Tugmaks\DoctrineWalkersTest\DummyEntity;
 
+#[CoversClass(LockingClause::class)]
+#[CoversMethod(LockingWalker::class, 'getFinalizer')]
+#[CoversMethod(LockingWalker::class, 'walkSelectStatement')]
 final class LockingWalkerTest extends AbstractWalkerTestCase
 {
-    /**
-     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingClause
-     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::getFinalizer
-     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::walkSelectStatement
-     *
-     * @dataProvider lockingClauseAndSql
-     */
+    #[DataProvider('lockingClauseAndSql')]
     public function testHints(LockingClause $lockingClause, string $producedSql): void
     {
         $dql = \sprintf('SELECT d FROM %s d WHERE d.id = 1', DummyEntity::class);
@@ -62,10 +61,6 @@ final class LockingWalkerTest extends AbstractWalkerTestCase
         ];
     }
 
-    /**
-     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::getFinalizer
-     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::walkSelectStatement
-     */
     public function testItThrowsExceptionIfLockingClauseNotProvided(): void
     {
         self::expectException(LockingWalkerException::class);
@@ -80,11 +75,6 @@ final class LockingWalkerTest extends AbstractWalkerTestCase
         $query->getSQL();
     }
 
-    /**
-     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingClause
-     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::getFinalizer
-     * @covers \Tugmaks\DoctrineWalkers\Locking\LockingWalker::walkSelectStatement
-     */
     public function testItThrowsExceptionIfAnotherLockSet(): void
     {
         self::expectException(LockingWalkerException::class);
