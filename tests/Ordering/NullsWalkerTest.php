@@ -14,21 +14,21 @@ declare(strict_types=1);
 namespace Tugmaks\DoctrineWalkersTest\Ordering;
 
 use Doctrine\ORM\Query;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tugmaks\DoctrineWalkers\Ordering\NULLS;
 use Tugmaks\DoctrineWalkers\Ordering\NullsWalker;
 use Tugmaks\DoctrineWalkers\Ordering\NullsWalkerException;
 use Tugmaks\DoctrineWalkersTest\AbstractWalkerTestCase;
 use Tugmaks\DoctrineWalkersTest\DummyEntity;
 
+#[CoversClass(NullsWalker::class)]
 final class NullsWalkerTest extends AbstractWalkerTestCase
 {
     /**
-     * @covers \Tugmaks\DoctrineWalkers\Ordering\NullsWalker
-     *
-     * @dataProvider orderings
-     *
      * @param array<string, NULLS> $hint
      */
+    #[DataProvider('orderings')]
     public function testNullWalker(string $dql, array $hint, string $sql): void
     {
         $query = $this->entityManager->createQuery($dql);
@@ -63,9 +63,6 @@ final class NullsWalkerTest extends AbstractWalkerTestCase
         ];
     }
 
-    /**
-     * @covers \Tugmaks\DoctrineWalkers\Ordering\NullsWalker
-     */
     public function testItThrowExceptionIfHintIsInvalid(): void
     {
         self::expectException(NullsWalkerException::class);
@@ -81,9 +78,6 @@ final class NullsWalkerTest extends AbstractWalkerTestCase
         $query->getSQL();
     }
 
-    /**
-     * @covers \Tugmaks\DoctrineWalkers\Ordering\NullsWalker
-     */
     public function testItThrowsAnErrorIfHintIsNotArray(): void
     {
         self::expectException(NullsWalkerException::class);

@@ -1,5 +1,11 @@
 CHANGELOG
 =========
+2.1
+---
+
+* Drop support for php 8.1
+* Migrate to phpunit 11
+
 2.0
 ---
 

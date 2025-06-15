@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace Tugmaks\DoctrineWalkers\Locking;
 
-final class LockingClause
+final readonly class LockingClause
 {
     public function __construct(
-        private readonly LockStrength $lockStrength,
-        private readonly ?Option $option = null,
+        private LockStrength $lockStrength,
+        private ?Option $option = null,
     ) {
     }
 

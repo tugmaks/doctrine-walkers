@@ -1,12 +1,12 @@
-name: "Static analysing"
+name: "Rector"
 env:
   APP_ENV: test
 
 on: [push, pull_request]
 
 jobs:
-  coding-standards:
-    name: "Static analysing"
+  Phpstan:
+    name: "Rector"
     runs-on: ubuntu-latest
 
     strategy:
@@ -15,7 +15,6 @@ jobs:
           - "8.4"
           - "8.3"
           - "8.2"
-          - "8.1"
 
     steps:
       - name: "Checkout"
@@ -30,5 +29,5 @@ jobs:
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
 
-      - name: "Run phpstan"
-        run: "vendor/bin/phpstan"
+      - name: "Run rector"
+        run: "vendor/bin/rector"

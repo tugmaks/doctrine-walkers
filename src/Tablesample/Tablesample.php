@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace Tugmaks\DoctrineWalkers\Tablesample;
 
-final class Tablesample
+final readonly class Tablesample
 {
     public function __construct(
-        private readonly TablesampleMethod $tablesampleMethod,
-        private readonly float $percentage,
+        private TablesampleMethod $tablesampleMethod,
+        private float $percentage,
     ) {
         if (0.00 > $percentage || 100.00 < $percentage) {
             throw new TablesampleWalkerException('A percentage must be between 0 and 100');
