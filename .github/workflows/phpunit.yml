@@ -37,7 +37,7 @@ jobs:
           args: tests --coverage-clover ./coverage.xml
 
       - name: Upload to Codecov
-        if: ${{ matrix.php-version == '8.1' }}
+        if: ${{ matrix.php-version == '8.2' }}
         uses: "codecov/codecov-action@v5"
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
