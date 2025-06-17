@@ -52,12 +52,12 @@ final class LockingWalkerTest extends AbstractWalkerTestCase
     {
         yield [
             new LockingClause(LockStrength::UPDATE),
-            'SELECT d0_.id AS id_0, d0_.name AS name_1 FROM de_tbl d0_ WHERE d0_.id = 1 FOR UPDATE',
+            'SELECT d0_.id AS id_0, d0_.name AS name_1, d0_.iq AS iq_2 FROM de_tbl d0_ WHERE d0_.id = 1 FOR UPDATE',
         ];
 
         yield [
             new LockingClause(LockStrength::UPDATE, Option::SKIP_LOCKED),
-            'SELECT d0_.id AS id_0, d0_.name AS name_1 FROM de_tbl d0_ WHERE d0_.id = 1 FOR UPDATE SKIP LOCKED',
+            'SELECT d0_.id AS id_0, d0_.name AS name_1, d0_.iq AS iq_2 FROM de_tbl d0_ WHERE d0_.id = 1 FOR UPDATE SKIP LOCKED',
         ];
     }
 

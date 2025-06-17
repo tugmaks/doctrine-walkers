@@ -51,3 +51,17 @@ Output:
 ```sql
 SELECT u0_.id AS id_0, u0_.name AS name_1 FROM users u0_ TABLESAMPLE BERNOULLI(0.1) ORDER BY u0_.name DESC
 ```
+
+## `WITH TIES` walker
+### Example
+```php
+$query = $this->entityManager->createQuery('SELECT u FROM App\Entity\User u ORDER BY u.name DESC')->setMaxResults(5);
+
+$query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, WithTiesWalker::class);
+
+$query->getSQL();
+```
+Output:
+```sql
+SELECT u0_.id AS id_0, u0_.name AS name_1 FROM users u0_ ORDER BY u0_.name DESC LIMIT 5 WITH TIES
+```

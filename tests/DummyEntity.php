@@ -25,4 +25,7 @@ class DummyEntity
 
     #[ORM\Column()]
     public string $name;
+
+    #[ORM\Column()]
+    public int $iq;
 }

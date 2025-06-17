@@ -50,13 +50,13 @@ final class TablesampleWalkerTest extends AbstractWalkerTestCase
         yield 'BERNOULLI(0.1)' => [
             \sprintf('SELECT d FROM %s d ORDER BY d.name DESC', DummyEntity::class),
             [DummyEntity::class => new Tablesample(TablesampleMethod::BERNOULLI, 0.1)],
-            'SELECT d0_.id AS id_0, d0_.name AS name_1 FROM de_tbl d0_ TABLESAMPLE BERNOULLI(0.1) ORDER BY d0_.name DESC',
+            'SELECT d0_.id AS id_0, d0_.name AS name_1, d0_.iq AS iq_2 FROM de_tbl d0_ TABLESAMPLE BERNOULLI(0.1) ORDER BY d0_.name DESC',
         ];
 
         yield 'SYSTEM(0.2)' => [
             \sprintf('SELECT d FROM %s d ORDER BY d.name DESC', DummyEntity::class),
             [DummyEntity::class => new Tablesample(TablesampleMethod::SYSTEM, 0.2)],
-            'SELECT d0_.id AS id_0, d0_.name AS name_1 FROM de_tbl d0_ TABLESAMPLE SYSTEM(0.2) ORDER BY d0_.name DESC',
+            'SELECT d0_.id AS id_0, d0_.name AS name_1, d0_.iq AS iq_2 FROM de_tbl d0_ TABLESAMPLE SYSTEM(0.2) ORDER BY d0_.name DESC',
         ];
     }
 
