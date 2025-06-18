@@ -6,13 +6,14 @@
     ],
     "type": "library",
     "keywords": [
-        "doctrine-walker",
-        "output-walker",
+        "doctrine walker",
+        "output walker",
         "doctrine",
-        "skip-locked",
-        "nulls-last",
-        "nulls-first",
-        "tablesample"
+        "skip locked",
+        "nulls last",
+        "nulls first",
+        "tablesample",
+        "with ties"
     ],
     "authors": [
         {

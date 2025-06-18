@@ -1,5 +1,10 @@
 CHANGELOG
 =========
+2.2
+---
+
+* WITH TIES Walker
+
 2.1
 ---
 

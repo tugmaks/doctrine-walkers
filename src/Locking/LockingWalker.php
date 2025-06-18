@@ -41,7 +41,7 @@ final class LockingWalker extends SqlWalker implements OutputWalker
             throw new LockingWalkerException('Locking clause not provided');
         }
 
-        return \sprintf('%s %s', parent::walkSelectStatement($AST), $lockClause->toSQL());
+        return \sprintf('%s %s', $this->createSqlForFinalizer($AST), $lockClause->toSQL());
     }
 
     public function getFinalizer(AST\DeleteStatement|AST\SelectStatement|AST\UpdateStatement $AST): SqlFinalizer
