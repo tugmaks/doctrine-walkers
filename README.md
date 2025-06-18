@@ -63,5 +63,5 @@ $query->getSQL();
 ```
 Output:
 ```sql
-SELECT u0_.id AS id_0, u0_.name AS name_1 FROM users u0_ ORDER BY u0_.name DESC LIMIT 5 WITH TIES
+SELECT u0_.id AS id_0, u0_.name AS name_1 FROM users u0_ ORDER BY u0_.name DESC FETCH NEXT 5 ROWS WITH TIES
 ```
