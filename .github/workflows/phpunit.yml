@@ -12,6 +12,7 @@ jobs:
     strategy:
       matrix:
         php-version:
+          - "8.5"
           - "8.4"
           - "8.3"
           - "8.2"
@@ -28,13 +29,13 @@ jobs:
       - name: "PHPUnit Tests"
         uses: "php-actions/phpunit@v4"
         env:
-          XDEBUG_MODE: coverage
+          XDEBUG_MODE: ${{ matrix.php-version == '8.2' && 'coverage' || 'off' }}
         with:
           php_version: "${{ matrix.php-version }}"
           bootstrap: vendor/autoload.php
           configuration: phpunit.xml
-          php_extensions: xdebug
-          args: tests --coverage-clover ./coverage.xml
+          php_extensions: ${{ matrix.php-version == '8.2' && 'xdebug' || '' }}
+          args: ${{ matrix.php-version == '8.2' && 'tests --coverage-clover ./coverage.xml' || 'tests' }}
 
       - name: Upload to Codecov
         if: ${{ matrix.php-version == '8.2' }}
