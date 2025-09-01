@@ -1,5 +1,11 @@
 CHANGELOG
 =========
+## Unreleased
+2.3
+---
+
+* Run CI on php 8.5
+
 2.2
 ---
 

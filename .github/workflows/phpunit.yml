@@ -12,6 +12,7 @@ jobs:
     strategy:
       matrix:
         php-version:
+          - "8.5"
           - "8.4"
           - "8.3"
           - "8.2"
@@ -20,21 +21,24 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v4"
 
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "xdebug"
+          php-version: "${{ matrix.php-version }}"
+
       - name: "Install dependencies with Composer"
         uses: "php-actions/composer@v6"
-        with:
-          php_version: "${{ matrix.php-version }}"
 
       - name: "PHPUnit Tests"
-        uses: "php-actions/phpunit@v4"
-        env:
-          XDEBUG_MODE: coverage
-        with:
-          php_version: "${{ matrix.php-version }}"
-          bootstrap: vendor/autoload.php
-          configuration: phpunit.xml
-          php_extensions: xdebug
-          args: tests --coverage-clover ./coverage.xml
+        run: |
+          if [ "${{ matrix.php-version }}" = "8.2" ]; then
+            echo "Running with coverage"
+            XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-clover coverage.xml
+          else
+            echo "Running without coverage"
+            ./vendor/bin/phpunit
+          fi
 
       - name: Upload to Codecov
         if: ${{ matrix.php-version == '8.2' }}
