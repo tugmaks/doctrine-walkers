@@ -28,7 +28,9 @@ jobs:
           php-version: "${{ matrix.php-version }}"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v1"
+        uses: "php-actions/composer@v6"
+        with:
+          php_version: "${{ matrix.php-version }}"
 
       - name: "Run composer normalize"
         run: "composer normalize --diff --dry-run"
