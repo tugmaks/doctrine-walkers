@@ -39,7 +39,6 @@ jobs:
             echo "Running without coverage"
             ./vendor/bin/phpunit
           fi
-        uses: "php-actions/phpunit@v4"
 
       - name: Upload to Codecov
         if: ${{ matrix.php-version == '8.2' }}
