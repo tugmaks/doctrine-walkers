@@ -18,32 +18,37 @@ use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
-use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 
 abstract class AbstractWalkerTestCase extends TestCase
 {
     protected EntityManager $entityManager;
-    protected Connection&MockObject $connectionMock;
+    protected Connection&Stub $connectionStub;
     protected Configuration $configuration;
 
     protected function setUp(): void
     {
         $config = new Configuration();
+
+        if (\PHP_VERSION_ID >= 80400) {
+            $config->enableNativeLazyObjects(true);
+        }
+
         $config->setProxyNamespace('Tmp\Doctrine\Tests\Proxies');
         $config->setProxyDir('/tmp/doctrine');
         $config->setAutoGenerateProxyClasses(false);
         $config->setSecondLevelCacheEnabled(false);
         $config->setMetadataDriverImpl(new AttributeDriver([]));
 
-        $connectionMock = $this->createMock(Connection::class);
+        $connectionStub = self::createStub(Connection::class);
 
-        $connectionMock->method('getDatabasePlatform')
+        $connectionStub->method('getDatabasePlatform')
             ->willReturn(new PostgreSQLPlatform());
 
-        $this->connectionMock = $connectionMock;
+        $this->connectionStub = $connectionStub;
         $this->configuration = $config;
 
-        $this->entityManager = new EntityManager($connectionMock, $config);
+        $this->entityManager = new EntityManager($connectionStub, $config);
     }
 }

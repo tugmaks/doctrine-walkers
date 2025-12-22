@@ -82,8 +82,8 @@ final class LockingWalkerTest extends AbstractWalkerTestCase
 
         $dql = \sprintf('SELECT d FROM %s d WHERE d.id = 1', DummyEntity::class);
 
-        $this->connectionMock->method('isTransactionActive')->willReturn(true);
-        $em = new EntityManager($this->connectionMock, $this->configuration);
+        $this->connectionStub->method('isTransactionActive')->willReturn(true);
+        $em = new EntityManager($this->connectionStub, $this->configuration);
 
         $query = $em->createQuery($dql)->setLockMode(LockMode::PESSIMISTIC_READ);
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LockingWalker::class);
