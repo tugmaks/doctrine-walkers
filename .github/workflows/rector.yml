@@ -2,7 +2,7 @@ name: "Rector"
 env:
   APP_ENV: test
 
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
   Phpstan:
@@ -29,6 +29,8 @@ jobs:
 
       - name: "Install dependencies with Composer"
         uses: "php-actions/composer@v6"
+        with:
+          php_version: "${{ matrix.php-version }}"
 
       - name: "Run rector"
         run: "vendor/bin/rector"

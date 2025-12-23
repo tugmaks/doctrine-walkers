@@ -36,11 +36,15 @@ final class TablesampleWalker extends SqlOutputWalker
 
         foreach ($identificationVarDecls as $identificationVariableDecl) {
             $sqlPart = $this->walkIdentificationVariableDeclaration($identificationVariableDecl);
-            $candidate = $hint[$identificationVariableDecl->rangeVariableDeclaration?->abstractSchemaName] ?? null;
+            $schemaName = $identificationVariableDecl->rangeVariableDeclaration?->abstractSchemaName;
 
-            if ($candidate instanceof Tablesample) {
-                $sqlPart .= ' ' . $candidate->toSQL();
+            if (null === $schemaName) {
+                continue;
             }
+
+            $candidate = $hint[$schemaName];
+
+            $sqlPart .= ' ' . $candidate->toSQL();
 
             $sqlParts[] = $sqlPart;
         }

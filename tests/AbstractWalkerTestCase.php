@@ -30,6 +30,11 @@ abstract class AbstractWalkerTestCase extends TestCase
     protected function setUp(): void
     {
         $config = new Configuration();
+
+        if (\PHP_VERSION_ID >= 80400) {
+            $config->enableNativeLazyObjects(true);
+        }
+
         $config->setProxyNamespace('Tmp\Doctrine\Tests\Proxies');
         $config->setProxyDir('/tmp/doctrine');
         $config->setAutoGenerateProxyClasses(false);
