@@ -1,6 +1,9 @@
 CHANGELOG
 =========
 ## Unreleased
+2.4
+---
+
 2.3
 ---
 
