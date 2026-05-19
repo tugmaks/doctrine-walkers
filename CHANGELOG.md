@@ -4,12 +4,15 @@ CHANGELOG
 2.3
 ---
 
+* `RETURNING` walker for SELECT/UPDATE/DELETE DQL queries
 * Run CI on php 8.5
+* Update README
+* Increase phpstan level from 9 to 10
 
 2.2
 ---
 
-* WITH TIES Walker
+* `WITH TIES` Walker
 
 2.1
 ---
@@ -31,14 +34,14 @@ CHANGELOG
 1.2
 ---
 
-* TABLESAMPLE walker (SYSTEM/BERNOULLI)
+* `TABLESAMPLE` walker (SYSTEM/BERNOULLI)
 
 1.1
 ---
 
-* Nulls walker (NULLS LAST/FIRST)
+* `Nulls` walker (NULLS LAST/FIRST)
 
 1.0
 ---
 
-* Locking walker (SELECT FOR UPDATE SKIP LOCKED)
+* `Locking` walker (SELECT FOR UPDATE SKIP LOCKED)

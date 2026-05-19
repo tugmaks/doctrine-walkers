@@ -13,7 +13,8 @@
         "nulls last",
         "nulls first",
         "tablesample",
-        "with ties"
+        "with ties",
+        "returning"
     ],
     "authors": [
         {

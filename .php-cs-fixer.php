@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 use Ergebnis\PhpCsFixer\Config;
 
-$header = <<<EOF
-Copyright (c) 2025 Maksim Tugaev
+$header = <<<'EOF'
+Copyright (c) 2025-2026 Maksim Tyugaev
 
 For the full copyright and license information, please view
 the LICENSE file that was distributed with this source code.
 
 @see https://github.com/tugmaks/doctrine-walkers
 EOF;
-
 
 $ruleSet = Config\RuleSet\Php81::create()->withHeader($header);
 

@@ -11,10 +11,8 @@ declare(strict_types=1);
  * @see https://github.com/tugmaks/doctrine-walkers
  */
 
-namespace Tugmaks\DoctrineWalkers\Tablesample;
+namespace Tugmaks\DoctrineWalkers\Returning;
 
-enum TablesampleMethod
+final class ReturningWalkerException extends \LogicException
 {
-    case BERNOULLI;
-    case SYSTEM;
 }

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Copyright (c) 2025 Maksim Tugaev
+ * Copyright (c) 2025-2026 Maksim Tyugaev
  *
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
