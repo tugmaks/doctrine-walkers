@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Copyright (c) 2025 Maksim Tugaev
+ * Copyright (c) 2025-2026 Maksim Tyugaev
  *
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
@@ -61,6 +61,23 @@ final class NullsWalkerTest extends AbstractWalkerTestCase
             ['d.name' => NULLS::LAST],
             'SELECT d0_.id AS id_0, d0_.name AS name_1, d0_.iq AS iq_2 FROM de_tbl d0_ ORDER BY d0_.name DESC NULLS LAST, d0_.id DESC',
         ];
+    }
+
+    public function testWithQueryBuilder(): void
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('d')
+            ->from(DummyEntity::class, 'd')
+            ->orderBy('d.name', 'DESC')
+            ->getQuery();
+
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullsWalker::class);
+        $query->setHint(NullsWalker::NULLS_RULE, ['d.name' => NULLS::LAST]);
+
+        self::assertSame(
+            'SELECT d0_.id AS id_0, d0_.name AS name_1, d0_.iq AS iq_2 FROM de_tbl d0_ ORDER BY d0_.name DESC NULLS LAST',
+            $query->getSQL(),
+        );
     }
 
     public function testItThrowExceptionIfHintIsInvalid(): void

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Copyright (c) 2025 Maksim Tugaev
+ * Copyright (c) 2025-2026 Maksim Tyugaev
  *
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
@@ -59,6 +59,21 @@ final class LockingWalkerTest extends AbstractWalkerTestCase
             new LockingClause(LockStrength::UPDATE, Option::SKIP_LOCKED),
             'SELECT d0_.id AS id_0, d0_.name AS name_1, d0_.iq AS iq_2 FROM de_tbl d0_ WHERE d0_.id = 1 FOR UPDATE SKIP LOCKED',
         ];
+    }
+
+    #[DataProvider('lockingClauseAndSql')]
+    public function testWithQueryBuilder(LockingClause $lockingClause, string $producedSql): void
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('d')
+            ->from(DummyEntity::class, 'd')
+            ->where('d.id = 1')
+            ->getQuery();
+
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LockingWalker::class);
+        $query->setHint(LockingWalker::LOCKING_CLAUSE, $lockingClause);
+
+        self::assertSame($producedSql, $query->getSQL());
     }
 
     public function testItThrowsExceptionIfLockingClauseNotProvided(): void

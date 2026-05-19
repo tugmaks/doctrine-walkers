@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Copyright (c) 2025 Maksim Tugaev
+ * Copyright (c) 2025-2026 Maksim Tyugaev
  *
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
@@ -28,6 +28,22 @@ final class WithTiesWalkerTest extends AbstractWalkerTestCase
     {
         $query = $this->entityManager
             ->createQuery(\sprintf('SELECT d FROM %s d ORDER BY d.iq DESC', DummyEntity::class))
+            ->setMaxResults($limit)
+            ->setFirstResult($offset);
+
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, WithTiesWalker::class);
+
+        self::assertSame($sql, $query->getSQL());
+    }
+
+    #[DataProvider('withTies')]
+    public function testWithQueryBuilder(?int $limit, int $offset, string $sql): void
+    {
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('d')
+            ->from(DummyEntity::class, 'd')
+            ->orderBy('d.iq', 'DESC')
+            ->getQuery()
             ->setMaxResults($limit)
             ->setFirstResult($offset);
 
