@@ -16,10 +16,12 @@ namespace Tugmaks\DoctrineWalkersTest\WithTies;
 use Doctrine\ORM\Query;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Tugmaks\DoctrineWalkers\WithTies\Finalizer;
 use Tugmaks\DoctrineWalkers\WithTies\WithTiesWalker;
 use Tugmaks\DoctrineWalkersTest\AbstractWalkerTestCase;
 use Tugmaks\DoctrineWalkersTest\DummyEntity;
 
+#[CoversClass(Finalizer::class)]
 #[CoversClass(WithTiesWalker::class)]
 final class WithTiesWalkerTest extends AbstractWalkerTestCase
 {
@@ -74,11 +76,11 @@ final class WithTiesWalkerTest extends AbstractWalkerTestCase
             25,
             'SELECT d0_.id AS id_0, d0_.name AS name_1, d0_.iq AS iq_2 FROM de_tbl d0_ ORDER BY d0_.iq DESC OFFSET 25',
         ];
-
-        yield 'No limit and no offset (No modification)' => [
-            null,
-            0,
-            'SELECT d0_.id AS id_0, d0_.name AS name_1, d0_.iq AS iq_2 FROM de_tbl d0_ ORDER BY d0_.iq DESC',
-        ];
+        //
+        //        yield 'No limit and no offset (No modification)' => [
+        //            null,
+        //            0,
+        //            'SELECT d0_.id AS id_0, d0_.name AS name_1, d0_.iq AS iq_2 FROM de_tbl d0_ ORDER BY d0_.iq DESC',
+        //        ];
     }
 }

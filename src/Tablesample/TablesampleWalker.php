@@ -36,13 +36,14 @@ final class TablesampleWalker extends SqlOutputWalker
 
         foreach ($identificationVarDecls as $identificationVariableDecl) {
             $sqlPart = $this->walkIdentificationVariableDeclaration($identificationVariableDecl);
-            $schemaName = $identificationVariableDecl->rangeVariableDeclaration?->abstractSchemaName;
+            $entityName = $identificationVariableDecl->rangeVariableDeclaration?->abstractSchemaName;
 
-            if (null === $schemaName) {
+            if (null === $entityName) {
                 continue;
             }
 
-            $candidate = $hint[$schemaName];
+            $candidate = $hint[$entityName]
+                ?? throw new TablesampleWalkerException(\sprintf('TABLESAMPLE hint missing for entity "%s"', $entityName));
 
             $sqlPart .= ' ' . $candidate->toSQL();
 
