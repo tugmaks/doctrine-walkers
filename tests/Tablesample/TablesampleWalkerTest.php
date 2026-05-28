@@ -87,7 +87,7 @@ final class TablesampleWalkerTest extends AbstractWalkerTestCase
 
         $query = $this->entityManager->createQuery($dql);
 
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, Tablesample::class);
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, TablesampleWalker::class);
         $query->setHint(TablesampleWalker::TABLESAMPLE_RULE, [DummyEntity::class => new Tablesample(TablesampleMethod::SYSTEM, $percentage)]);
 
         $query->getSQL();
@@ -101,5 +101,24 @@ final class TablesampleWalkerTest extends AbstractWalkerTestCase
         yield [-1.00];
 
         yield [101.00];
+
+        yield [0];
+
+        yield [100];
+    }
+
+    public function testItThrowsExceptionWhenHintIsMissingForEntity(): void
+    {
+        $this->expectException(TablesampleWalkerException::class);
+        $this->expectExceptionMessage('TABLESAMPLE hint missing for entity');
+
+        $dql = \sprintf('SELECT d FROM %s d ORDER BY d.name DESC', DummyEntity::class);
+
+        $query = $this->entityManager->createQuery($dql);
+
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, TablesampleWalker::class);
+        $query->setHint(TablesampleWalker::TABLESAMPLE_RULE, []);
+
+        $query->getSQL();
     }
 }

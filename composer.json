@@ -32,8 +32,8 @@
         "ergebnis/php-cs-fixer-config": "^6.46",
         "friendsofphp/php-cs-fixer": "^3.75",
         "icanhazstring/composer-unused": "^0.9",
+        "infection/infection": ">=0.29.10",
         "phpstan/phpstan": "^2.1",
-        "phpstan/phpstan-doctrine": "^2.0",
         "phpstan/phpstan-phpunit": "^2.0",
         "phpunit/phpunit": "^11.5",
         "rector/rector": "^2.0"
@@ -46,7 +46,8 @@
     },
     "config": {
         "allow-plugins": {
-            "ergebnis/composer-normalize": true
+            "ergebnis/composer-normalize": true,
+            "infection/extension-installer": true
         }
     }
 }
