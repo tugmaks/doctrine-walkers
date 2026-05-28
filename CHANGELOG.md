@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+2.5
+-----
+* `DISTINCT ON` walker
+
 2.4
 -----
 * Add Infection

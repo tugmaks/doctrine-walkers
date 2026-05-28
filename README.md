@@ -11,11 +11,51 @@ composer require tugmaks/doctrine-walkers
 
 ## Walkers
 
+- [Distinct on](#distinct-on-walker)
 - [Locking](#locking-walker)
 - [Nulls](#nulls-walker)
 - [Returning](#returning-walker)
 - [Tablesample](#tablesample-walker)
 - [With ties](#with-ties-walker)
+
+---
+
+## Distinct on walker
+
+Adds a `DISTINCT ON (expr)` clause to the `SELECT` based on the hint — a PostgreSQL-only feature that keeps only one row per unique value of the specified expression.
+
+### Example via DQL
+
+```php
+$query = $this->entityManager->createQuery('SELECT u FROM App\Entity\User u ORDER BY u.name DESC');
+
+$query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, DistinctOnWalker::class);
+$query->setHint(DistinctOnWalker::DISTINCT_ON, ['u.name']);
+
+$query->getSQL();
+```
+
+or
+
+### Example via QueryBuilder
+
+```php
+$query = $this->entityManager->createQueryBuilder()
+    ->select('u')
+    ->from(User::class, 'u')
+    ->orderBy('u.name', 'DESC')
+    ->getQuery();
+
+$query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, DistinctOnWalker::class);
+$query->setHint(DistinctOnWalker::DISTINCT_ON, ['u.name']);
+
+$query->getSQL();
+```
+
+**Generated SQL:**
+```sql
+SELECT DISTINCT ON (u0_.name) u0_.id AS id_0, u0_.name AS name_1 FROM users u0_ ORDER BY u0_.name DESC
+```
 
 ---
 
