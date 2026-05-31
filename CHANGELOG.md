@@ -6,7 +6,6 @@ CHANGELOG
 
 2.4
 -----
-* Add Infection
 * Fix `TABLESAMPLE` walker: throw `TablesampleWalkerException` when hint is missing an entity name instead of silent crash
 * Ensure 0 and 100 are not allowed in `TABLESAMPLE`
 * Fix `TABLESAMPLE` tests
