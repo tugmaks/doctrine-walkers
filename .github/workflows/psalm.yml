@@ -1,0 +1,36 @@
+name: "Psalm"
+env:
+  APP_ENV: test
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  Psalm:
+    name: "Psalm"
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version:
+          - "8.5"
+          - "8.4"
+          - "8.3"
+          - "8.2"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "${{ matrix.php-version }}"
+
+      - name: "Install dependencies with Composer"
+        uses: "php-actions/composer@v6"
+        with:
+          php_version: "${{ matrix.php-version }}"
+
+      - name: "Run psalm"
+        run: "vendor/bin/psalm"

@@ -26,7 +26,7 @@ final class LockingWalker extends SqlWalker implements OutputWalker
 {
     public const LOCKING_CLAUSE = 'LockingWalker.LockingClause';
 
-    public function walkSelectStatement(AST\SelectStatement $AST): string
+    public function walkSelectStatement(AST\SelectStatement $selectStatement): string
     {
         $query = $this->getQuery();
         $lockMode = $query->getHint(Query::HINT_LOCK_MODE) ?: LockMode::NONE;
@@ -41,7 +41,7 @@ final class LockingWalker extends SqlWalker implements OutputWalker
             throw new LockingWalkerException('Locking clause not provided');
         }
 
-        return \sprintf('%s %s', $this->createSqlForFinalizer($AST), $lockClause->toSQL());
+        return \sprintf('%s %s', $this->createSqlForFinalizer($selectStatement), $lockClause->toSQL());
     }
 
     public function getFinalizer(AST\DeleteStatement|AST\SelectStatement|AST\UpdateStatement $AST): SqlFinalizer

@@ -29,7 +29,14 @@ final class NullsWalker extends SqlOutputWalker
             $orderByItem->expression instanceof Query\AST\PathExpression
             && Query\AST\PathExpression::TYPE_STATE_FIELD === $orderByItem->expression->type
         ) {
-            $name = $orderByItem->expression->identificationVariable . '.' . $orderByItem->expression->field;
+            $identificationVariable = $orderByItem->expression->identificationVariable;
+            $field = $orderByItem->expression->field;
+
+            if (null === $field) {
+                throw new NullsWalkerException('PathExpression field cannot be null.');
+            }
+
+            $name = $identificationVariable . '.' . $field;
             $nulls = $this->getNULLS($name);
 
             if (null !== $nulls) {

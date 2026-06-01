@@ -14,6 +14,9 @@ declare(strict_types=1);
 namespace Tugmaks\DoctrineWalkersTest\Ordering;
 
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\AST\OrderByItem;
+use Doctrine\ORM\Query\AST\PathExpression;
+use Doctrine\ORM\Query\ParserResult;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tugmaks\DoctrineWalkers\Ordering\NULLS;
@@ -108,5 +111,24 @@ final class NullsWalkerTest extends AbstractWalkerTestCase
         $query->setHint(NullsWalker::NULLS_RULE, 'foo');
 
         $query->getSQL();
+    }
+
+    public function testItThrowsExceptionIfFieldIsNull(): void
+    {
+        self::expectException(NullsWalkerException::class);
+        self::expectExceptionMessage('PathExpression field cannot be null.');
+
+        $query = new Query($this->entityManager);
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullsWalker::class);
+        $query->setHint(NullsWalker::NULLS_RULE, []);
+
+        $walker = new NullsWalker($query, new ParserResult(), []);
+
+        $pathExpression = new PathExpression(PathExpression::TYPE_STATE_FIELD, 'd', field: null);
+        $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
+        $orderByItem = new OrderByItem($pathExpression);
+        $orderByItem->type = 'ASC';
+
+        $walker->walkOrderByItem($orderByItem);
     }
 }

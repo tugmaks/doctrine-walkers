@@ -29,7 +29,7 @@ final readonly class Tablesample
         return 'TABLESAMPLE ' .
             $this->tablesampleMethod->name .
             '(' .
-            $this->percentage .
+            (string) $this->percentage .
             ')';
     }
 }

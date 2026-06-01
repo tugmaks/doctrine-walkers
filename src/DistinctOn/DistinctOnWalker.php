@@ -24,9 +24,9 @@ final class DistinctOnWalker extends SqlWalker implements OutputWalker
 {
     public const DISTINCT_ON = 'DistinctOnWalker.DistinctOn';
 
-    public function walkSelectStatement(AST\SelectStatement $AST): string
+    public function walkSelectStatement(AST\SelectStatement $selectStatement): string
     {
-        if ($AST->selectClause->isDistinct) {
+        if ($selectStatement->selectClause->isDistinct) {
             throw new DistinctOnWalkerException('DISTINCT ON is not compatible with SELECT DISTINCT in the same query');
         }
 
@@ -36,7 +36,7 @@ final class DistinctOnWalker extends SqlWalker implements OutputWalker
             throw new DistinctOnWalkerException('DISTINCT ON hint must be a non-empty array of field paths');
         }
 
-        $sql = $this->createSqlForFinalizer($AST);
+        $sql = $this->createSqlForFinalizer($selectStatement);
 
         $columns = [];
 

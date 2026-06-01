@@ -27,9 +27,9 @@ final class ReturningWalker extends SqlWalker implements OutputWalker
 {
     public const RETURNING_CLAUSE = 'ReturningWalker.ReturningClause';
 
-    public function walkSelectStatement(AST\SelectStatement $AST): string
+    public function walkSelectStatement(AST\SelectStatement $selectStatement): string
     {
-        return \sprintf('%s %s', $this->createSqlForFinalizer($AST), $this->getReturningSql());
+        return \sprintf('%s %s', $this->createSqlForFinalizer($selectStatement), $this->getReturningSql());
     }
 
     public function walkUpdateStatement(AST\UpdateStatement $updateStatement): string

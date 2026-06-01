@@ -1,5 +1,9 @@
 CHANGELOG
-=========
+========
+2.6 Unreleased
+-----
+* Add psalm CI workflow
+
 2.5
 -----
 * `DISTINCT ON` walker
