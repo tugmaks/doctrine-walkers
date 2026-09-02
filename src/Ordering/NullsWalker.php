@@ -51,6 +51,10 @@ final class NullsWalker extends SqlOutputWalker
     {
         $hint = $this->getQuery()->getHint(self::NULLS_RULE);
 
+        if (null === $hint || false === $hint) {
+            return null;
+        }
+
         if (!\is_array($hint)) {
             throw new NullsWalkerException('Hint for NullsWalker should be an array...');
         }

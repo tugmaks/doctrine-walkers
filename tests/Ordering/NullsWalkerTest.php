@@ -83,6 +83,19 @@ final class NullsWalkerTest extends AbstractWalkerTestCase
         );
     }
 
+    public function testItUsesDefaultOrderingWhenHintIsNotSet(): void
+    {
+        $dql = \sprintf('SELECT d FROM %s d ORDER BY d.name DESC', DummyEntity::class);
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullsWalker::class);
+
+        self::assertSame(
+            'SELECT d0_.id AS id_0, d0_.name AS name_1, d0_.iq AS iq_2 FROM de_tbl d0_ ORDER BY d0_.name DESC',
+            $query->getSQL(),
+        );
+    }
+
     public function testItThrowExceptionIfHintIsInvalid(): void
     {
         self::expectException(NullsWalkerException::class);
