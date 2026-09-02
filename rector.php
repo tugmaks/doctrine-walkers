@@ -21,5 +21,5 @@ return RectorConfig::configure()
     ->withCache('./var/cache/rector', FileCacheStorage::class)
     ->withSets([
         LevelSetList::UP_TO_PHP_82,
-        PHPUnitSetList::PHPUNIT_110,
+        PHPUnitSetList::COMPOSER_BASED,
     ]);
