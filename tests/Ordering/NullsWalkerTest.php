@@ -129,11 +129,8 @@ final class NullsWalkerTest extends AbstractWalkerTestCase
         );
     }
 
-    public function testItThrowsExceptionIfHintRefersToNonFieldOrderByItem(): void
+    public function testItAppliesHintToHiddenAlias(): void
     {
-        self::expectException(NullsWalkerException::class);
-        self::expectExceptionMessage('NULLS FIRST/LAST hint refers to fields that are not used in ORDER BY: len.');
-
         $dql = \sprintf('SELECT d, LENGTH(d.name) AS HIDDEN len FROM %s d ORDER BY len DESC', DummyEntity::class);
 
         $query = $this->entityManager->createQuery($dql);
@@ -141,7 +138,103 @@ final class NullsWalkerTest extends AbstractWalkerTestCase
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullsWalker::class);
         $query->setHint(NullsWalker::NULLS_RULE, ['len' => NULLS::LAST]);
 
+        self::assertSame(
+            'SELECT d0_.id AS id_0, d0_.name AS name_1, d0_.iq AS iq_2, LENGTH(d0_.name) AS sclr_3 FROM de_tbl d0_ ORDER BY sclr_3 DESC NULLS LAST',
+            $query->getSQL(),
+        );
+    }
+
+    public function testItAppliesHintToFieldsAndAliasesTogether(): void
+    {
+        $dql = \sprintf('SELECT d, LENGTH(d.name) AS HIDDEN len FROM %s d ORDER BY len DESC, d.name ASC, d.iq ASC', DummyEntity::class);
+
+        $query = $this->entityManager->createQuery($dql);
+
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullsWalker::class);
+        $query->setHint(NullsWalker::NULLS_RULE, ['len' => NULLS::LAST, 'd.name' => NULLS::FIRST]);
+
+        self::assertSame(
+            'SELECT d0_.id AS id_0, d0_.name AS name_1, d0_.iq AS iq_2, LENGTH(d0_.name) AS sclr_3 FROM de_tbl d0_ ORDER BY sclr_3 DESC NULLS LAST, d0_.name ASC NULLS FIRST, d0_.iq ASC',
+            $query->getSQL(),
+        );
+    }
+
+    public function testItThrowsExceptionIfAliasIsExpandedIntoMultipleColumns(): void
+    {
+        self::expectException(NullsWalkerException::class);
+        self::expectExceptionMessage('NULLS FIRST/LAST cannot be applied to "ent" because it is expanded into multiple columns.');
+
+        $dql = \sprintf('SELECT d AS ent FROM %s d ORDER BY ent DESC', DummyEntity::class);
+
+        $query = $this->entityManager->createQuery($dql);
+
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullsWalker::class);
+        $query->setHint(NullsWalker::NULLS_RULE, ['ent' => NULLS::LAST]);
+
         $query->getSQL();
+    }
+
+    public function testItThrowsExceptionIfHintRefersToExpressionInOrderBy(): void
+    {
+        self::expectException(NullsWalkerException::class);
+        self::expectExceptionMessage('NULLS FIRST/LAST hint refers to fields that are not used in ORDER BY: d.name.');
+
+        $dql = \sprintf('SELECT d FROM %s d ORDER BY LENGTH(d.name) DESC', DummyEntity::class);
+
+        $query = $this->entityManager->createQuery($dql);
+
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullsWalker::class);
+        $query->setHint(NullsWalker::NULLS_RULE, ['d.name' => NULLS::LAST]);
+
+        $query->getSQL();
+    }
+
+    /**
+     * @see https://github.com/tugmaks/doctrine-walkers/issues/18
+     */
+    public function testItAppliesHintToSubselectAlias(): void
+    {
+        $dql = \sprintf(
+            'SELECT d, (SELECT MAX(d2.iq) FROM %1$s d2 WHERE d2.name = d.name) AS foo FROM %1$s d ORDER BY foo DESC',
+            DummyEntity::class,
+        );
+
+        $query = $this->entityManager->createQuery($dql);
+
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullsWalker::class);
+        $query->setHint(NullsWalker::NULLS_RULE, ['foo' => NULLS::FIRST]);
+
+        self::assertSame(
+            'SELECT d0_.id AS id_0, d0_.name AS name_1, d0_.iq AS iq_2, (SELECT MAX(d1_.iq) AS sclr_4 FROM de_tbl d1_ WHERE d1_.name = d0_.name) AS sclr_3 FROM de_tbl d0_ ORDER BY sclr_3 DESC NULLS FIRST',
+            $query->getSQL(),
+        );
+    }
+
+    /**
+     * @see https://github.com/tugmaks/doctrine-walkers/issues/18
+     */
+    public function testItAppliesHintToSubselectAliasWithQueryBuilder(): void
+    {
+        $subQuery = $this->entityManager->createQueryBuilder()
+            ->select('MAX(d2.iq)')
+            ->from(DummyEntity::class, 'd2')
+            ->where('d2.name = d.name')
+            ->getDQL();
+
+        $query = $this->entityManager->createQueryBuilder()
+            ->select('d')
+            ->addSelect(\sprintf('(%s) AS foo', $subQuery))
+            ->from(DummyEntity::class, 'd')
+            ->orderBy('foo', 'DESC')
+            ->getQuery();
+
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullsWalker::class);
+        $query->setHint(NullsWalker::NULLS_RULE, ['foo' => NULLS::FIRST]);
+
+        self::assertSame(
+            'SELECT d0_.id AS id_0, d0_.name AS name_1, d0_.iq AS iq_2, (SELECT MAX(d1_.iq) AS sclr_4 FROM de_tbl d1_ WHERE d1_.name = d0_.name) AS sclr_3 FROM de_tbl d0_ ORDER BY sclr_3 DESC NULLS FIRST',
+            $query->getSQL(),
+        );
     }
 
     public function testItIgnoresHintWhenQueryHasNoOrderBy(): void
