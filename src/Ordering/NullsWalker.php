@@ -28,22 +28,22 @@ final class NullsWalker extends SqlOutputWalker
         $hint = $this->getHint();
 
         if (null !== $hint) {
-            $orderedFields = [];
+            $orderedItems = [];
 
             foreach ($orderByClause->orderByItems as $orderByItem) {
-                $name = self::getStateFieldName($orderByItem);
+                $key = self::getOrderByKey($orderByItem);
 
-                if (null !== $name) {
-                    $orderedFields[] = $name;
+                if (null !== $key) {
+                    $orderedItems[] = $key;
                 }
             }
 
-            $unknownFields = \array_diff(\array_keys($hint), $orderedFields);
+            $unknownItems = \array_diff(\array_keys($hint), $orderedItems);
 
-            if ([] !== $unknownFields) {
+            if ([] !== $unknownItems) {
                 throw new NullsWalkerException(\sprintf(
                     'NULLS FIRST/LAST hint refers to fields that are not used in ORDER BY: %s.',
-                    \implode(', ', $unknownFields),
+                    \implode(', ', $unknownItems),
                 ));
             }
         }
@@ -56,35 +56,50 @@ final class NullsWalker extends SqlOutputWalker
      */
     public function walkOrderByItem(Query\AST\OrderByItem $orderByItem): string
     {
-        $name = self::getStateFieldName($orderByItem);
+        $key = self::getOrderByKey($orderByItem);
+        $nulls = null === $key ? null : $this->getNULLS($key);
+        $sql = parent::walkOrderByItem($orderByItem);
 
-        if (null !== $name && $orderByItem->expression instanceof Query\AST\PathExpression) {
-            $nulls = $this->getNULLS($name);
-
-            if (null !== $nulls) {
-                return $this->walkPathExpression($orderByItem->expression) . ' ' . $orderByItem->type . ' ' . $nulls->value;
-            }
+        if (null === $key || null === $nulls) {
+            return $sql;
         }
 
-        return parent::walkOrderByItem($orderByItem);
+        if (\is_string($orderByItem->expression) && \str_contains($sql, ',')) {
+            throw new NullsWalkerException(\sprintf(
+                'NULLS FIRST/LAST cannot be applied to "%s" because it is expanded into multiple columns.',
+                $key,
+            ));
+        }
+
+        return $sql . ' ' . $nulls->value;
     }
 
-    private static function getStateFieldName(Query\AST\OrderByItem $orderByItem): ?string
+    /**
+     * Returns "alias.field" for entity fields, the alias itself for result variables
+     * (e.g. "SELECT (...) AS foo ... ORDER BY foo") and null for anything else.
+     */
+    private static function getOrderByKey(Query\AST\OrderByItem $orderByItem): ?string
     {
+        $expression = $orderByItem->expression;
+
+        if (\is_string($expression)) {
+            return $expression;
+        }
+
         if (
-            !$orderByItem->expression instanceof Query\AST\PathExpression
-            || Query\AST\PathExpression::TYPE_STATE_FIELD !== $orderByItem->expression->type
+            !$expression instanceof Query\AST\PathExpression
+            || Query\AST\PathExpression::TYPE_STATE_FIELD !== $expression->type
         ) {
             return null;
         }
 
-        $field = $orderByItem->expression->field;
+        $field = $expression->field;
 
         if (null === $field) {
             throw new NullsWalkerException('PathExpression field cannot be null.');
         }
 
-        return $orderByItem->expression->identificationVariable . '.' . $field;
+        return $expression->identificationVariable . '.' . $field;
     }
 
     /**
