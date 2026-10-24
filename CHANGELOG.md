@@ -3,6 +3,7 @@ CHANGELOG
 2.6 Unreleased
 -----
 * Add psalm CI workflow
+* `NULLS` walker now throws `NullsWalkerException` when hint refers to a field that is not used in `ORDER BY` instead of silently ignoring it (#19)
 
 2.5
 -----
