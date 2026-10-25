@@ -13,7 +13,7 @@ composer require tugmaks/doctrine-walkers
 
 - [Distinct on](#distinct-on-walker)
 - [Locking](#locking-walker)
-- [Nulls](#nulls-walker)
+- [`NULLS FIRST` / `NULLS LAST`](#nulls-first-nulls-last-walker)
 - [Returning](#returning-walker)
 - [Tablesample](#tablesample-walker)
 - [With ties](#with-ties-walker)
@@ -98,7 +98,7 @@ SELECT u0_.id AS id_0, u0_.name AS name_1 FROM users u0_ WHERE u0_.id = 1 FOR UP
 
 ---
 
-## NULLS walker
+## `NULLS FIRST` / `NULLS LAST` Walker
 
 Adds `NULLS FIRST` / `NULLS LAST` to `ORDER BY` clauses. Useful for controlling null sorting order in PostgreSQL.
 
