@@ -1,6 +1,6 @@
 {
     "name": "tugmaks/doctrine-walkers",
-    "description": "Set of doctrine walkers",
+    "description": "Doctrine walkers to add DISTINCT ON, NULLS FIRST, NULLS LAST",
     "license": [
         "MIT"
     ],
