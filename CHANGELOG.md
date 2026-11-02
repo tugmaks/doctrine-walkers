@@ -1,10 +1,10 @@
 CHANGELOG
 ========
-2.6 Unreleased
+2.6
 -----
 * Add psalm CI workflow
-* `NULLS` walker now throws `NullsWalkerException` when hint refers to a field that is not used in `ORDER BY` instead of silently ignoring it (#19)
-* `NULLS` walker now supports result variable aliases in `ORDER BY`, e.g. `SELECT (...) AS foo ... ORDER BY foo` with hint `['foo' => NULLS::FIRST]` (#18)
+* `NULLS` walker now throws `NullsWalkerException` when hint refers to a field that is not used in `ORDER BY` instead of silently ignoring it ([#19](https://github.com/tugmaks/doctrine-walkers/issues/19))
+* `NULLS` walker now supports result variable aliases in `ORDER BY`, e.g. `SELECT (...) AS foo ... ORDER BY foo` with hint `['foo' => NULLS::FIRST]` ([#18](https://github.com/tugmaks/doctrine-walkers/issues/18))
 
 2.5
 -----
