@@ -1,6 +1,6 @@
 {
     "name": "tugmaks/doctrine-walkers",
-    "description": "Doctrine walkers to add DISTINCT ON, NULLS FIRST, NULLS LAST",
+    "description": "Doctrine ORM output walkers adding support for DISTINCT ON, FOR UPDATE, NULLS FIRST / NULLS LAST, RETURNING, TABLESAMPLE and WITH TIES.",
     "license": [
         "MIT"
     ],
@@ -9,12 +9,14 @@
         "doctrine walker",
         "output walker",
         "doctrine",
-        "skip locked",
-        "nulls last",
+        "distinct on",
+        "for update",
         "nulls first",
+        "nulls last",
+        "returning",
+        "skip locked",
         "tablesample",
-        "with ties",
-        "returning"
+        "with ties"
     ],
     "authors": [
         {
