@@ -11,16 +11,18 @@ composer require tugmaks/doctrine-walkers
 
 ## Walkers
 
-- [Distinct on](#distinct-on-walker)
-- [Locking](#locking-walker)
-- [`NULLS FIRST` / `NULLS LAST`](#nulls-first-nulls-last-walker)
-- [Returning](#returning-walker)
-- [Tablesample](#tablesample-walker)
-- [With ties](#with-ties-walker)
+Listed in alphabetical order.
+
+- [`DISTINCT ON`](#distinct-on)
+- [`FOR UPDATE`](#for-update)
+- [`NULLS FIRST` / `NULLS LAST`](#nulls-first--nulls-last)
+- [`RETURNING`](#returning)
+- [`TABLESAMPLE`](#tablesample)
+- [`WITH TIES`](#with-ties)
 
 ---
 
-## Distinct on walker
+## `DISTINCT ON`
 
 Adds a `DISTINCT ON (expr)` clause to the `SELECT` based on the hint — a PostgreSQL-only feature that keeps only one row per unique value of the specified expression.
 
@@ -34,8 +36,6 @@ $query->setHint(DistinctOnWalker::DISTINCT_ON, ['u.name']);
 
 $query->getSQL();
 ```
-
-or
 
 ### Example via QueryBuilder
 
@@ -59,24 +59,11 @@ SELECT DISTINCT ON (u0_.name) u0_.id AS id_0, u0_.name AS name_1 FROM users u0_ 
 
 ---
 
-## Locking walker
+## `FOR UPDATE`
 
 Adds a `FOR UPDATE` clause with configurable lock strength and options (`SKIP LOCKED`, `NOWAIT`). Useful for pessimistic locking.
 
-### Example via DQL
-
-```php
-$query = $this->entityManager->createQuery('SELECT u FROM App\Entity\User u WHERE id = 1');
-
-$query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LockingWalker::class);
-$query->setHint(LockingWalker::LOCKING_CLAUSE, new LockingClause(LockStrength::UPDATE, Option::SKIP_LOCKED));
-
-$query->getSQL();
-```
-
-or
-
-### Example via QueryBuilder
+### Example
 
 ```php
 $query = $this->entityManager->createQueryBuilder()
@@ -98,24 +85,13 @@ SELECT u0_.id AS id_0, u0_.name AS name_1 FROM users u0_ WHERE u0_.id = 1 FOR UP
 
 ---
 
-## `NULLS FIRST` / `NULLS LAST` Walker
+## `NULLS FIRST` / `NULLS LAST`
 
 Adds `NULLS FIRST` / `NULLS LAST` to `ORDER BY` clauses. Useful for controlling null sorting order in PostgreSQL.
 
-### Example via DQL
+Hints accept entity fields (`u.name`) as well as result variable aliases, including subselect and `HIDDEN` aliases.
 
-```php
-$query = $this->entityManager->createQuery('SELECT u FROM App\Entity\User u ORDER BY u.name DESC');
-
-$query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullsWalker::class);
-$query->setHint(NullsWalker::NULLS_RULE, ['u.name' => NULLS::LAST]);
-
-$query->getSQL();
-```
-
-or
-
-### Example via QueryBuilder
+### Example
 
 ```php
 $query = $this->entityManager->createQueryBuilder()
@@ -135,9 +111,36 @@ $query->getSQL();
 SELECT u0_.id AS id_0, u0_.name AS name_1 FROM users u0_ ORDER BY u0_.name DESC NULLS LAST
 ```
 
+### Example with an alias
+
+```php
+$subQuery = $this->entityManager->createQueryBuilder()
+    ->select('MAX(u2.id)')
+    ->from(User::class, 'u2')
+    ->where('u2.name = u.name')
+    ->getDQL();
+
+$query = $this->entityManager->createQueryBuilder()
+    ->select('u')
+    ->addSelect(sprintf('(%s) AS max_id', $subQuery))
+    ->from(User::class, 'u')
+    ->orderBy('max_id', 'DESC')
+    ->getQuery();
+
+$query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullsWalker::class);
+$query->setHint(NullsWalker::NULLS_RULE, ['max_id' => NULLS::FIRST]);
+
+$query->getSQL();
+```
+
+**Generated SQL:**
+```sql
+SELECT u0_.id AS id_0, u0_.name AS name_1, (SELECT MAX(u1_.id) AS sclr_3 FROM users u1_ WHERE u1_.name = u0_.name) AS sclr_2 FROM users u0_ ORDER BY sclr_2 DESC NULLS FIRST
+```
+
 ---
 
-## RETURNING walker
+## `RETURNING`
 
 Adds a `RETURNING` clause to DQL queries (`SELECT`/`UPDATE`/`DELETE`). Useful when you need to return data from modified rows (PostgreSQL).
 
@@ -145,20 +148,7 @@ Accepts `'*'` (all columns) or an array of specific column names, e.g. `['id', '
 
 ### SELECT
 
-#### Example via DQL
-
-```php
-$query = $this->entityManager->createQuery('SELECT u FROM App\Entity\User u WHERE u.id = 1');
-
-$query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, ReturningWalker::class);
-$query->setHint(ReturningWalker::RETURNING_CLAUSE, new ReturningClause('*'));
-
-$query->getSQL();
-```
-
-or
-
-#### Example via QueryBuilder
+#### Example
 
 ```php
 $query = $this->entityManager->createQueryBuilder()
@@ -180,20 +170,7 @@ SELECT u0_.id AS id_0, u0_.name AS name_1 FROM users u0_ WHERE u0_.id = 1 RETURN
 
 ### UPDATE
 
-#### Example via DQL
-
-```php
-$query = $this->entityManager->createQuery("UPDATE App\Entity\User u SET u.name = 'new' WHERE u.id = 1");
-
-$query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, ReturningWalker::class);
-$query->setHint(ReturningWalker::RETURNING_CLAUSE, new ReturningClause(['id', 'name']));
-
-$query->getSQL();
-```
-
-or
-
-#### Example via QueryBuilder
+#### Example
 
 ```php
 $query = $this->entityManager->createQueryBuilder()
@@ -217,20 +194,7 @@ UPDATE users SET name = 'new' WHERE id = 1 RETURNING id, name
 
 ### DELETE
 
-#### Example via DQL
-
-```php
-$query = $this->entityManager->createQuery('DELETE App\Entity\User u WHERE u.id = 1');
-
-$query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, ReturningWalker::class);
-$query->setHint(ReturningWalker::RETURNING_CLAUSE, new ReturningClause());
-
-$query->getSQL();
-```
-
-or
-
-#### Example via QueryBuilder
+#### Example
 
 ```php
 $query = $this->entityManager->createQueryBuilder()
@@ -252,24 +216,11 @@ DELETE FROM users WHERE id = 1 RETURNING *
 
 ---
 
-## Tablesample walker
+## `TABLESAMPLE`
 
 Adds a `TABLESAMPLE` clause to the `FROM` clause with support for `BERNOULLI` and `SYSTEM` sampling methods. Useful for sampling rows randomly.
 
-### Example via DQL
-
-```php
-$query = $this->entityManager->createQuery('SELECT u FROM App\Entity\User u ORDER BY u.name DESC');
-
-$query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, TablesampleWalker::class);
-$query->setHint(TablesampleWalker::TABLESAMPLE_RULE, [User::class => new Tablesample(TablesampleMethod::BERNOULLI, 0.1) ]);
-
-$query->getSQL();
-```
-
-or
-
-### Example via QueryBuilder
+### Example
 
 ```php
 $query = $this->entityManager->createQueryBuilder()
@@ -291,23 +242,11 @@ SELECT u0_.id AS id_0, u0_.name AS name_1 FROM users u0_ TABLESAMPLE BERNOULLI(0
 
 ---
 
-## `WITH TIES` walker
+## `WITH TIES`
 
 Replaces `LIMIT` / `OFFSET` with SQL standard `FETCH NEXT ... ROWS WITH TIES`. Useful for pagination that includes ties.
 
-### Example via DQL
-
-```php
-$query = $this->entityManager->createQuery('SELECT u FROM App\Entity\User u ORDER BY u.name DESC')->setMaxResults(5);
-
-$query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, WithTiesWalker::class);
-
-$query->getSQL();
-```
-
-or
-
-### Example via QueryBuilder
+### Example
 
 ```php
 $query = $this->entityManager->createQueryBuilder()
