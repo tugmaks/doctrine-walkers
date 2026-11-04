@@ -1,5 +1,9 @@
 CHANGELOG
 ========
+2.7 (Unreleased)
+-----
+* `FILTER (WHERE ...)` walker: conditions built with `Doctrine\ORM\Query\Expr`, to-one associations, aggregates inside `COALESCE(...)` and `COUNT(DISTINCT ...)`
+
 2.6
 -----
 * Add psalm CI workflow
