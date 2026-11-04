@@ -14,6 +14,7 @@ composer require tugmaks/doctrine-walkers
 Listed in alphabetical order.
 
 - [`DISTINCT ON`](#distinct-on)
+- [`FILTER (WHERE ...)`](#filter-where-)
 - [`FOR UPDATE`](#for-update)
 - [`NULLS FIRST` / `NULLS LAST`](#nulls-first--nulls-last)
 - [`RETURNING`](#returning)
@@ -56,6 +57,117 @@ $query->getSQL();
 ```sql
 SELECT DISTINCT ON (u0_.name) u0_.id AS id_0, u0_.name AS name_1 FROM users u0_ ORDER BY u0_.name DESC
 ```
+
+---
+
+## `FILTER (WHERE ...)`
+
+Adds a `FILTER (WHERE ...)` clause to an aggregate selected under a result alias. Useful when one query returns several aggregates with different conditions, or a filtered aggregate next to an unfiltered total. With a single aggregate, a plain `WHERE` does the same. Supported by PostgreSQL and SQLite.
+
+The hint maps a `SELECT` alias to a condition built with Doctrine's `Expr` (`$qb->expr()` or `new Expr()`). Supported: `andX`, `orX`, `not`, `eq`, `neq`, `lt`, `lte`, `gt`, `gte`, `like`, `notLike`, `in`, `notIn`, `isNull`, `isNotNull`, `between` and `literal`. Operands are field paths (`u.iq`), to-one associations (`u.team`), parameters (`:iq_min`) or literals.
+
+The aggregate can be `COUNT`, `SUM`, `AVG`, `MIN` or `MAX`, including `COUNT(DISTINCT ...)` and an aggregate wrapped in `COALESCE(...)`.
+
+### Example
+
+```php
+$qb = $this->entityManager->createQueryBuilder();
+
+$query = $qb
+    ->select('COUNT(u.id) AS high_iq_count', 'COUNT(u.id) AS total')
+    ->from(User::class, 'u')
+    ->setParameter('iq_min', 100)
+    ->getQuery();
+
+$query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, FilterWhereWalker::class);
+$query->setHint(FilterWhereWalker::FILTER_WHERE, [
+    'high_iq_count' => $qb->expr()->andX(
+        $qb->expr()->gte('u.iq', ':iq_min'),
+        $qb->expr()->isNotNull('u.name'),
+    ),
+]);
+
+$query->getSQL();
+```
+
+**Generated SQL:**
+```sql
+SELECT COUNT(u0_.id) FILTER (WHERE u0_.iq >= ? AND u0_.name IS NOT NULL) AS sclr_0, COUNT(u0_.id) AS sclr_1 FROM users u0_
+```
+
+Without the query builder, create the expression builder directly:
+
+```php
+$expr = new Expr();
+
+$query = $this->entityManager->createQuery(
+    'SELECT COUNT(u.id) AS high_iq_count, COUNT(u.id) AS total FROM App\Entity\User u',
+);
+$query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, FilterWhereWalker::class);
+$query->setHint(FilterWhereWalker::FILTER_WHERE, [
+    'high_iq_count' => $expr->gte('u.iq', ':iq_min'),
+]);
+$query->setParameter('iq_min', 100);
+```
+
+### Associations
+
+A to-one association on the owning side with a single join column is compared by its foreign key column. For example, members of one team next to all users (`User::$team` is a `ManyToOne`):
+
+```php
+$query = $this->entityManager->createQuery(
+    'SELECT COUNT(u.id) AS total, COUNT(u.id) AS team_members FROM App\Entity\User u',
+);
+$query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, FilterWhereWalker::class);
+$query->setHint(FilterWhereWalker::FILTER_WHERE, [
+    'team_members' => $expr->eq('u.team', ':team'),
+]);
+$query->setParameter('team', $team->getId());
+```
+
+```sql
+SELECT COUNT(u0_.id) AS sclr_0, COUNT(u0_.id) FILTER (WHERE u0_.team_id = ?) AS sclr_1 FROM users u0_
+```
+
+Prefer binding the scalar identifier. An entity object also works: Doctrine replaces it with its identifier and infers the parameter type from that value. If the identifier has a custom DBAL type (for example `uuid`), pass the type explicitly: `setParameter('team', $team->getId(), 'uuid')`.
+
+### `COALESCE` and `COUNT(DISTINCT ...)`
+
+Balance, income and expenses in one query, plus the number of accounts that received money:
+
+```php
+$query = $this->entityManager->createQuery(
+    'SELECT COALESCE(SUM(t.amount), 0) AS balance,'
+    . ' COALESCE(SUM(t.amount), 0) AS income,'
+    . ' COALESCE(SUM(t.amount), 0) AS expenses,'
+    . ' COUNT(DISTINCT t.account) AS accounts_with_income'
+    . ' FROM App\Entity\Transaction t',
+);
+$query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, FilterWhereWalker::class);
+$query->setHint(FilterWhereWalker::FILTER_WHERE, [
+    'income' => $expr->gt('t.amount', 0),
+    'expenses' => $expr->lt('t.amount', 0),
+    'accounts_with_income' => $expr->gt('t.amount', 0),
+]);
+```
+
+```sql
+SELECT COALESCE(SUM(t0_.amount), 0) AS sclr_0,
+       COALESCE(SUM(t0_.amount) FILTER (WHERE t0_.amount > 0), 0) AS sclr_1,
+       COALESCE(SUM(t0_.amount) FILTER (WHERE t0_.amount < 0), 0) AS sclr_2,
+       COUNT(DISTINCT t0_.account_id) FILTER (WHERE t0_.amount > 0) AS sclr_3
+FROM transactions t0_
+```
+
+The filter is added to the aggregate inside `COALESCE`, so `COALESCE` must have exactly one aggregate as a direct argument.
+
+### Limitations
+
+- Only to-one owning side associations with a single join column; to-many, inverse side and composite foreign keys are rejected.
+- No nested paths such as `u.team.id`: compare `u.team` instead.
+- No arbitrary functions (`LOWER`, `CONCAT`, ...), `CASE` or arithmetic in conditions.
+- `COALESCE` with several aggregates or with an aggregate inside arithmetic (`COALESCE(SUM(t.amount) + 1, 0)`) is rejected.
+- `SELECT` only, `UPDATE` / `DELETE` are not supported.
 
 ---
 
