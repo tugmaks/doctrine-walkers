@@ -1,6 +1,10 @@
 CHANGELOG
 ========
-2.7 (Unreleased)
+2.8 (Unreleased)
+-----
+* Migrate to Psalm 7
+
+2.7
 -----
 * `FILTER (WHERE ...)` walker: conditions built with `Doctrine\ORM\Query\Expr`, to-one associations, aggregates inside `COALESCE(...)` and `COUNT(DISTINCT ...)`
 
