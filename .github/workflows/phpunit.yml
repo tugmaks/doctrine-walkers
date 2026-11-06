@@ -6,16 +6,41 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   test:
-    name: "Test"
+    name: "PHP ${{ matrix.php-version }}, PostgreSQL ${{ matrix.postgres-version }}"
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         php-version:
           - "8.5"
           - "8.4"
           - "8.3"
           - "8.2"
+        postgres-version:
+          - "18"
+        include:
+          # 13 is the oldest with FETCH ... WITH TIES.
+          - php-version: "8.5"
+            postgres-version: "13"
+
+    services:
+      postgres:
+        image: "postgres:${{ matrix.postgres-version }}-alpine"
+        env:
+          POSTGRES_USER: walkers
+          POSTGRES_PASSWORD: walkers
+          POSTGRES_DB: walkers
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd "pg_isready -U walkers -d walkers"
+          --health-interval 1s
+          --health-timeout 3s
+          --health-retries 30
+
+    env:
+      DATABASE_URL: "pdo-pgsql://walkers:walkers@localhost:5432/walkers"
 
     steps:
       - name: "Checkout"
@@ -25,6 +50,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           coverage: "xdebug"
+          extensions: "pdo_pgsql"
           php-version: "${{ matrix.php-version }}"
 
       - name: "Install dependencies with Composer"
@@ -36,10 +62,10 @@ jobs:
         run: |
           if [ "${{ matrix.php-version }}" = "8.2" ]; then
             echo "Running with coverage"
-            XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-clover coverage.xml
+            XDEBUG_MODE=coverage ./vendor/bin/phpunit --testsuite unit,integration --coverage-clover coverage.xml
           else
             echo "Running without coverage"
-            ./vendor/bin/phpunit
+            ./vendor/bin/phpunit --testsuite unit,integration
           fi
 
       - name: Upload to Codecov
@@ -49,4 +75,3 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
           verbose: true
-
