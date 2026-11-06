@@ -22,6 +22,14 @@ final readonly class ReturningClause
     {
     }
 
+    /**
+     * @return list<string>|string
+     */
+    public function getColumns(): array|string
+    {
+        return $this->columns;
+    }
+
     public function toSQL(): string
     {
         if (\is_array($this->columns)) {

@@ -3,6 +3,7 @@
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.5/phpunit.xsd"
          bootstrap="vendor/autoload.php"
          cacheDirectory=".phpunit.cache"
+         defaultTestSuite="unit"
          executionOrder="depends,defects"
          requireCoverageMetadata="true"
          beStrictAboutCoverageMetadata="true"
@@ -10,8 +11,12 @@
          failOnRisky="true"
          failOnWarning="true">
     <testsuites>
-        <testsuite name="default">
+        <testsuite name="unit">
             <directory>tests</directory>
+            <exclude>tests/Integration</exclude>
+        </testsuite>
+        <testsuite name="integration">
+            <directory>tests/Integration</directory>
         </testsuite>
     </testsuites>
     <source restrictNotices="true"
