@@ -254,35 +254,13 @@ SELECT u0_.id AS id_0, u0_.name AS name_1, (SELECT MAX(u1_.id) AS sclr_3 FROM us
 
 ## `RETURNING`
 
-Adds a `RETURNING` clause to DQL queries (`SELECT`/`UPDATE`/`DELETE`). Useful when you need to return data from modified rows (PostgreSQL).
+Adds a `RETURNING` clause to DQL `UPDATE` and `DELETE` queries and returns the modified rows as the query result (PostgreSQL).
 
-Accepts `'*'` (all columns) or an array of specific column names, e.g. `['id', 'name']`.
+Accepts `'*'` (all mapped columns of the entity) or a list of columns, e.g. `['id', 'name']`. An expression needs an alias, which becomes the row key: `'score * 2 AS doubled'`.
 
-### SELECT
-
-#### Example
-
-```php
-$query = $this->entityManager->createQueryBuilder()
-    ->select('u')
-    ->from(User::class, 'u')
-    ->where('u.id = 1')
-    ->getQuery();
-
-$query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, ReturningWalker::class);
-$query->setHint(ReturningWalker::RETURNING_CLAUSE, new ReturningClause());
-
-$query->getSQL();
-```
-
-**Generated SQL:**
-```sql
-SELECT u0_.id AS id_0, u0_.name AS name_1 FROM users u0_ WHERE u0_.id = 1 RETURNING *
-```
+Each row is an array keyed by column name. Values of mapped columns are converted with the column's Doctrine type, values of expressions are returned as the driver gives them. `getArrayResult()`, `getResult()` and `execute()` all return the rows instead of the affected row count.
 
 ### UPDATE
-
-#### Example
 
 ```php
 $query = $this->entityManager->createQueryBuilder()
@@ -296,17 +274,15 @@ $query = $this->entityManager->createQueryBuilder()
 $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, ReturningWalker::class);
 $query->setHint(ReturningWalker::RETURNING_CLAUSE, new ReturningClause(['id', 'name']));
 
-$query->getSQL();
+$rows = $query->getArrayResult(); // [['id' => 1, 'name' => 'new']]
 ```
 
 **Generated SQL:**
 ```sql
-UPDATE users SET name = 'new' WHERE id = 1 RETURNING id, name
+UPDATE users SET name = ? WHERE id = ? RETURNING id, name
 ```
 
 ### DELETE
-
-#### Example
 
 ```php
 $query = $this->entityManager->createQueryBuilder()
@@ -318,13 +294,34 @@ $query = $this->entityManager->createQueryBuilder()
 $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, ReturningWalker::class);
 $query->setHint(ReturningWalker::RETURNING_CLAUSE, new ReturningClause());
 
-$query->getSQL();
+$rows = $query->getArrayResult(); // [['id' => 1, 'name' => 'new']]
 ```
 
 **Generated SQL:**
 ```sql
-DELETE FROM users WHERE id = 1 RETURNING *
+DELETE FROM users WHERE id = ? RETURNING *
 ```
+
+### Single-result methods
+
+> [!WARNING]
+> The rows are modified before Doctrine checks how many of them came back. `getSingleResult()`, `getOneOrNullResult()` and `getSingleScalarResult()` throw `NonUniqueResultException` or `NoResultException` when the rows are already updated or deleted.
+
+To leave the data unchanged in that case, run the query in a transaction:
+
+```php
+$row = $this->entityManager->wrapInTransaction(
+    static fn (): mixed => $query->getSingleResult(),
+);
+```
+
+On an exception `wrapInTransaction()` rolls back and closes the entity manager. To keep using it, wrap the query in `$this->entityManager->getConnection()->transactional(...)` instead.
+
+### Limitations
+
+- `SELECT` is not supported: PostgreSQL has no `RETURNING` for it. The walker throws `ReturningWalkerException`.
+- Entities with `JOINED` inheritance are not supported: Doctrine runs such statements as several queries over a temporary table. The walker throws `ReturningWalkerException`.
+- The result cache (`enableResultCache()`) is ignored, otherwise a cache hit would skip the modification.
 
 ---
 
@@ -377,3 +374,28 @@ $query->getSQL();
 ```sql
 SELECT u0_.id AS id_0, u0_.name AS name_1 FROM users u0_ ORDER BY u0_.name DESC FETCH NEXT 5 ROWS WITH TIES
 ```
+
+---
+
+## Development
+
+Unit tests compare generated SQL and need no database:
+
+```bash
+vendor/bin/phpunit
+```
+
+Integration tests run the queries against PostgreSQL in Docker:
+
+```bash
+docker compose run --rm php composer install
+docker compose run --rm php vendor/bin/phpunit --testsuite integration
+```
+
+To test another PostgreSQL version, recreate the database container:
+
+```bash
+POSTGRES_VERSION=13 docker compose up -d --force-recreate postgres
+```
+
+Without `DATABASE_URL` the integration tests are skipped. In CI they fail instead.

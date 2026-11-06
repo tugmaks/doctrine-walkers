@@ -17,42 +17,31 @@ use Doctrine\ORM\Query;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tugmaks\DoctrineWalkers\Returning\ReturningClause;
+use Tugmaks\DoctrineWalkers\Returning\ReturningExecutor;
 use Tugmaks\DoctrineWalkers\Returning\ReturningWalker;
 use Tugmaks\DoctrineWalkers\Returning\ReturningWalkerException;
 use Tugmaks\DoctrineWalkersTest\AbstractWalkerTestCase;
 use Tugmaks\DoctrineWalkersTest\DummyEntity;
+use Tugmaks\DoctrineWalkersTest\DummyJoinedEntity;
 
 #[CoversClass(ReturningClause::class)]
+#[CoversClass(ReturningExecutor::class)]
 #[CoversClass(ReturningWalker::class)]
 final class ReturningWalkerTest extends AbstractWalkerTestCase
 {
-    #[DataProvider('selectQueries')]
-    public function testSelect(ReturningClause $returningClause, string $producedSql): void
+    public function testThrowsExceptionOnSelect(): void
     {
+        self::expectException(ReturningWalkerException::class);
+        self::expectExceptionMessage('RETURNING is supported only for UPDATE and DELETE statements, not for SELECT');
+
         $dql = \sprintf('SELECT d FROM %s d WHERE d.id = 1', DummyEntity::class);
 
         $query = $this->entityManager->createQuery($dql);
 
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, ReturningWalker::class);
-        $query->setHint(ReturningWalker::RETURNING_CLAUSE, $returningClause);
+        $query->setHint(ReturningWalker::RETURNING_CLAUSE, new ReturningClause());
 
-        self::assertSame($producedSql, $query->getSQL());
-    }
-
-    /**
-     * @return iterable<array{0:ReturningClause, 1:string}>
-     */
-    public static function selectQueries(): iterable
-    {
-        yield 'Return all columns' => [
-            new ReturningClause(),
-            'SELECT d0_.id AS id_0, d0_.name AS name_1, d0_.iq AS iq_2 FROM de_tbl d0_ WHERE d0_.id = 1 RETURNING *',
-        ];
-
-        yield 'Return specific columns' => [
-            new ReturningClause(['id', 'name']),
-            'SELECT d0_.id AS id_0, d0_.name AS name_1, d0_.iq AS iq_2 FROM de_tbl d0_ WHERE d0_.id = 1 RETURNING id, name',
-        ];
+        $query->getSQL();
     }
 
     #[DataProvider('updateQueries')]
@@ -116,21 +105,6 @@ final class ReturningWalkerTest extends AbstractWalkerTestCase
         ];
     }
 
-    #[DataProvider('selectQueries')]
-    public function testSelectWithQueryBuilder(ReturningClause $returningClause, string $producedSql): void
-    {
-        $query = $this->entityManager->createQueryBuilder()
-            ->select('d')
-            ->from(DummyEntity::class, 'd')
-            ->where('d.id = 1')
-            ->getQuery();
-
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, ReturningWalker::class);
-        $query->setHint(ReturningWalker::RETURNING_CLAUSE, $returningClause);
-
-        self::assertSame($producedSql, $query->getSQL());
-    }
-
     #[DataProvider('updateQueries')]
     public function testUpdateWithQueryBuilder(ReturningClause $returningClause, string $producedSql): void
     {
@@ -163,17 +137,41 @@ final class ReturningWalkerTest extends AbstractWalkerTestCase
         self::assertSame($producedSql, $query->getSQL());
     }
 
-    public function testThrowsExceptionIfReturningClauseNotProvidedOnSelect(): void
+    public function testThrowsExceptionIfReturningClauseNotProvided(): void
     {
         self::expectException(ReturningWalkerException::class);
         self::expectExceptionMessage('Returning clause not provided');
 
-        $dql = \sprintf('SELECT d FROM %s d WHERE d.id = 1', DummyEntity::class);
+        $dql = \sprintf('DELETE %s d WHERE d.id = 1', DummyEntity::class);
 
         $query = $this->entityManager->createQuery($dql);
 
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, ReturningWalker::class);
 
         $query->getSQL();
+    }
+
+    #[DataProvider('joinedInheritanceQueries')]
+    public function testThrowsExceptionForJoinedInheritance(string $dql): void
+    {
+        self::expectException(ReturningWalkerException::class);
+        self::expectExceptionMessage('RETURNING is not supported for entities with JOINED inheritance');
+
+        $query = $this->entityManager->createQuery(\sprintf($dql, DummyJoinedEntity::class));
+
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, ReturningWalker::class);
+        $query->setHint(ReturningWalker::RETURNING_CLAUSE, new ReturningClause());
+
+        $query->getSQL();
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function joinedInheritanceQueries(): iterable
+    {
+        yield 'UPDATE' => ["UPDATE %s d SET d.name = 'test'"];
+
+        yield 'DELETE' => ['DELETE %s d'];
     }
 }

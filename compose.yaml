@@ -1,0 +1,36 @@
+# Local environment for integration tests:
+#   docker compose run --rm php composer install
+#   docker compose run --rm php vendor/bin/phpunit --testsuite integration
+# Another PostgreSQL version: POSTGRES_VERSION=13 docker compose up -d --force-recreate postgres
+services:
+  postgres:
+    image: "postgres:${POSTGRES_VERSION:-18}-alpine"
+    environment:
+      POSTGRES_USER: walkers
+      POSTGRES_PASSWORD: walkers
+      POSTGRES_DB: walkers
+    ports:
+      - "${POSTGRES_PORT:-54329}:5432"
+    tmpfs:
+      - /var/lib/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "walkers", "-d", "walkers"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+
+  php:
+    build:
+      context: .docker/php
+      args:
+        PHP_VERSION: "${PHP_VERSION:-8.5}"
+    user: "${UID:-1000}:${GID:-1000}"
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      DATABASE_URL: "pdo-pgsql://walkers:walkers@postgres:5432/walkers"
+      COMPOSER_HOME: /tmp/composer
+    depends_on:
+      postgres:
+        condition: service_healthy

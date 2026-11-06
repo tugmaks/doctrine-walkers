@@ -3,6 +3,10 @@ CHANGELOG
 2.8 (Unreleased)
 -----
 * Migrate to Psalm 7
+* Integration tests against PostgreSQL: Docker Compose locally, GitHub Actions in CI
+* **BC break:** `RETURNING` walker no longer supports `SELECT` (PostgreSQL rejects `SELECT ... RETURNING` with a syntax error) and throws `ReturningWalkerException` for it
+* **BC break:** `RETURNING` walker returns the rows from `RETURNING` as the query result: `getArrayResult()`, `getResult()` and `execute()` give a list of rows instead of the affected row count, which was lost before (and was `0` for queries without parameters)
+* `RETURNING` walker throws `ReturningWalkerException` for entities with `JOINED` inheritance instead of silently dropping the clause
 
 2.7
 -----
